@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Imports;
+
+use App\Models\peppcodes;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Support\Facades\Log;
+
+
+class importcodes implements ToModel
+{
+    protected $existingCodes = [];
+    protected $newRecords = [];
+    protected $updateRecords = []; //Add
+    protected $batchSize = 600;
+
+    public function __construct()
+    {
+        // Preload existing transaction codes into an array
+        $this->existingCodes = peppcodes::pluck('tranx_code')->toArray();
+
+    }
+
+    /**
+    * @param array $row
+    *
+    * @return \Illuminate\Database\Eloquent\Model|null
+    */
+    public function model(array $row)
+    {
+        ini_set('max_execution_time', 300); // 5 minutes
+        ini_set('memory_limit', '512M');
+
+        $stat = $this->determineStatus($row[1]);
+        $tranxCode = substr($row[2], 0, 13);
+
+        // Check if the transaction code exists in the preloaded data using a "like" search
+        $existingRecord = $this->findExistingRecord($tranxCode);
+
+        if ($existingRecord) {
+            //update
+            if ($existingRecord->status !== $stat) {
+                // Collect the record for batch updating
+                $this->updateRecords[] = [
+                    'id'            => $existingRecord->id,
+                    'status'        => $stat,
+                    'tranx_code'    => $row[2],
+                    'receiver'      => $row[4],
+                ];
+            // Update in batches
+            if (count($this->updateRecords) >= $this->batchSize) {
+                $this->updateBatch();
+            }
+
+            }
+        } else {
+            // Collect new records for batch insertion
+            $this->newRecords[] = [
+                'tranx_date'    => Carbon::createFromTimestamp((intval($row[0]) - 25569) * 86400)->format('m-d-Y'),
+                'status'        => $stat,
+                'tranx_code'    => $row[2],
+                'sender'        => $row[3],
+                'receiver'      => $row[4],
+                'principal'     => $row[5],
+                'fee'           => $row[6],
+                'total'         => $row[7],
+            ];
+
+            // Insert in batches
+            if (count($this->newRecords) >= $this->batchSize) {
+                $this->insertBatch();
+            }
+
+        }
+
+        return null;
+    }
+
+    protected function determineStatus($status)
+    {
+        if ($status == "xx") {
+            return "Cancelled";
+        } elseif ($status == "") {
+            return "Unclaimed";
+        } else {
+            return "Claimed";
+        }
+    }
+
+    protected function findExistingRecord($tranxCode)
+    {
+        // Iterate over existing codes to find a match using a "like" search
+        foreach ($this->existingCodes as $code) {
+            if (strpos($code, $tranxCode) === 0) {
+                return peppcodes::where('tranx_code', $code)->first();
+            }
+        }
+        return null;
+    }
+
+    protected function insertBatch()
+    {
+        try {
+            DB::table('peppcodes')->insert($this->newRecords);
+            $this->newRecords = [];
+        } catch (\Exception $e) {
+            Log::error('Batch insertion error: ' . $e->getMessage());
+        }
+    }
+
+    //add
+    protected function updateBatch()
+    {
+        try {
+            foreach ($this->updateRecords as $record) {
+                DB::table('peppcodes')
+                    ->where('id', $record['id'])
+                    ->update([
+                        'status' => $record['status'],
+                        'tranx_code' => $record['tranx_code'],
+                        'receiver' => $record['receiver'],
+                    ]);
+            }
+            $this->updateRecords = [];
+        } catch (\Exception $e) {
+            Log::error('Batch update error: ' . $e->getMessage());
+        }
+    }
+
+    public function __destruct()
+    {
+        if (!empty($this->newRecords)) {
+            $this->insertBatch();
+        }
+        //add
+        if (!empty($this->updateRecords)) {
+            $this->updateBatch();
+        }
+    }
+
+    public function batchSize(): int
+    {
+        return $this->batchSize;
+    }
+
+    public function uniqueBy()
+    {
+        return 'tranx_code';
+    }
+
+}
