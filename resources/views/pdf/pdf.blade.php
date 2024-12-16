@@ -104,7 +104,9 @@
                 </tbody>
             </table>
             @if ($loop->last)
-            <div class="prepared">Prepared By: {{Auth::user()->name}}</div>
+            <div class="prepared">Prepared By: {{Auth::user()->name}}<br>
+            <span style="font-style:italic; font-size:9;">Electronically Generated. No signature required.</span>
+            </div>
             @endif
             <div class="footer">
             <span class="page-number"></span>

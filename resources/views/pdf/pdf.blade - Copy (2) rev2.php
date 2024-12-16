@@ -92,4 +92,23 @@
                      @endif   
                 @endforeach
     </body>
+
+    <div class="container" style="width: 100%; display:table;">
+                <div class="box" style="width: 19.35%; white-space: nowrap; display: table-cell; ">
+                    <p style=" font-size: 10;">TOTAL ACIC AMOUNT: </p>
+                </div>
+                <div class="box" style="width: 70.97%; display: table-cell; ">
+                    <p style=" font-size: 10;">{{number_format($sum,2)}} <span style="text-align:right">test</span></p>
+                </div>
+                <div class="box" style="width: 9.68%; display: table-cell; ">
+                    <p style=" font-size: 10;">{{$acics->count()}}
+                    </p>
+                </div>
+            </div>
+
+            <tr>
+                        <td style="text-align:left; border: none;  width:19.35%;">AMOUNT IN WORDS :</td>
+                        <td style="text-align:left; border: none;  width:70.97%;">{{$inwords}}</td>
+                        <td style="text-align:left; border: none;  width:9.68%;"></td>
+                    </tr>
 </html>

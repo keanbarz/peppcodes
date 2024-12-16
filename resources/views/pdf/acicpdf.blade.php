@@ -8,7 +8,6 @@
                 width: 100%;
                 border-collapse: collapse;
                 font-family:  Arial, sans-serif;
-                border: 1px solid #ddd; /* Add border to the entire table */
                 }
 
             /* Style table headers */
@@ -22,7 +21,7 @@
                 border: 1px solid black; /* Add border to table header cells */
                 }
             td {
-                padding: 6px;
+                padding: 2px;
                 min-width: unset;
                 text-align: left;
                 border: 1px solid black; /* Add border to table data cells */
@@ -35,6 +34,8 @@
 
             @page {
                 margin: 0.2in 0.2in 0.2in 0.2in;
+                font-family:  Arial, sans-serif;
+                font-size: 10;
             }
             .page-break {
                 page-break-before: always;
@@ -60,61 +61,90 @@
             }
             .container {
             display: flex; /* Enables flexbox layout */
-            justify-content: space-between; /* Distributes divs with space between them */
-            gap: 10px; /* Optional: Adds spacing between the divs */
+            /*justify-content: space-between; /* Distributes divs with space between them */
+            /*gap: 10px; /* Optional: Adds spacing between the divs */
             }
 
             .box {
-                width: 100px;
-                height: 100px;
-                background-color: lightblue;
-                text-align: center;
-                line-height: 100px; /* Centers text vertically */
-                border: 1px solid #ccc;
+                /*border: 1px solid #ccc;*/
             }
         </style>
     </head>
     <body>
-        <div class="container" style="width: 100%; display: table;">
-            <div class="box" style="width: 33%;">
-                <p style="font-family: sans-serif; font-size: 11;">LAND BANK OF THE PHILIPPINES<br>
-                C. M. RECTO<br>
-                C. M. RECTO, DAVAO CITY<br>
-                DATE PREAPARED CARBON MM/D/YYYY
-                </p>
+        <div>
+            <div class="container" style="width: 100%; display:table;">
+                <div class="box" style="width: 30%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10;">LAND BANK OF THE PHILIPPINES<br>
+                    C. M. RECTO<br>
+                    C. M. RECTO, DAVAO CITY<br>
+                    DATE PREPARED 12/13/2024
+                    </p>
+                </div>
+                <div class="box" style="width: 43%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; text-align: center;">DEPARTMENT OF LABOR AND EMPLOYMENT
+                    QUIMPO BOULEVARD, BRGY. 74-A MATINA
+                    CROSSING, DAVAO CITY</p>
+                </div>                
+                <div class="box" style="width: 27%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10;">ACIC NO.: insert code<br>
+                    ORG CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160010300011<br>
+                    FUNDING SOURCE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;01101101<br>
+                    AREA CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1190<br>
+                    ALLOCATION NO : insert code
+                    </p>
+                </div>  
             </div>
-            <div class="box" style="width: 33%;">
-                <p style="font-family: sans-serif; font-size: 11;">DAPAT SA TUNGA NI (DEPARTMENT)
-                </p>
-            </div>                
-            <div class="box" style="display: table-cell; width: 33%; vertical-align: top; padding: 5px; border: 1px solid #000;">
-                <p style="font-family: sans-serif; font-size: 11;">KINI SA KILID (ACIC NO)
-                </p>
-            </div>  
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th class="text-center">CHECK NO.</th>
-                    <th class="text-center">DATE OF ISSUE</th>
-                    <th class="text-center">PAYEE</th>
-                    <th class="text-center">AMOUNT</th>
-                    <th class="text-center">OBJ CODE</th>
-                    <th class="text-center">REMARKS</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($acics as $acic)
+            <div style="text-align: center; font-size: 10;">
+                <strong>ADVICE OF CHECKS ISSUED AND CANCELLED</strong>
+            </div>
+        </div><br>
+        <div>
+            <span style=" font-size: 10;">ACCOUNT NO.: 2016-9032-59</span>
+            <table>
+                <thead>
+                </thead>
+                <tbody>
                     <tr>
-                        <td style="font-family: sans-serif; font-size: 11;">{{ $acic->check_number}} </td>
-                        <td>{{ $acic->check_date}} </td>
-                        <td>{{ $acic->payee}} </td>
-                        <td style="text-align: right;">{{ number_format(intval($acic->amount),2) }} </td>
-                        <td>{{ $acic->uacs}} </td>
-                        <td> </td>
+                        <td style="text-align:center; border: none; background-color: lightgray; width:11.29%;">CHECK NO.</td>
+                        <td style="text-align:center; border: none; background-color: lightgray; white-space: nowrap; width:14.52%;">DATE OF ISSUE</td>
+                        <td style="text-align:center; border: none; background-color: lightgray; width:33.87%;">PAYEE</td>
+                        <td style="text-align:center; border: none; background-color: lightgray; width:17.74%;">AMOUNT</td>
+                        <td style="text-align:center; border: none; background-color: lightgray; width:11.29%;">OBJ CODE</td>
+                        <td style="text-align:center; border: none; background-color: lightgray; width:9.68%">REMARKS</td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    @foreach ($acics as $acic)
+                        <tr>
+                            <td style="font-family: sans-serif; font-size: 10; text-align:right;">{{ str_pad($acic->check_number,10,'0', STR_PAD_LEFT)}} </td>
+                            <td style="font-family: sans-serif; font-size: 10; text-align:center;">{{ preg_replace('/(\d{1,2})\/(\d)\/(\d{4})/', '$1/0$2/$3',$acic->check_date)}} </td>
+                            <td style="font-family: sans-serif; font-size: 10;">{{ substr($acic->payee,0,30)}} </td>
+                            <td style="text-align: right;">{{ number_format(($acic->amount),2) }} </td>
+                            <td style="font-family: sans-serif; font-size: 10;  text-align:center;">{{ $acic->uacs}} </td>
+                            <td> </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:19.35%;">TOTAL ACIC AMOUNT :</td>
+                        <td style="text-align:left; border: none;  width:50%;">{{number_format($sum,2)}}</td>                        
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:20.97%;">TOTAL NO. OF CHECKS :</td>
+                        <td style="text-align:left; border: none;  width:9.68%;">{{$acics->count()}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="text-align:left; border: none;  width:19.35%;">AMOUNT IN WORDS :</td>
+                        <td style="text-align:left; border: none;  width:70.97%;">{{$inwords}}</td>
+                        <td style="text-align:left; border: none;  width:9.68%;"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </body>
 </html>

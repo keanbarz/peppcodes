@@ -207,11 +207,30 @@ class ImportController extends Controller
 
     public function acicPDF(Request $request)
     {   $acics = acic::all();
+        $presum = $acics->sum('amount');
+        $sum = $presum;
+        $inwords = strtoupper($this->spellNumber($presum));
         $acct = '2016903259'; #str_replace("-", "", $account_number);
         $acicpad = '0002412143'; #str_pad(str_replace("-","",$request->acic_no),10, '0', STR_PAD_LEFT);
         $ncapad = '0000008798'; #str_pad(str_replace("-","",$request->nca_number),10,'0', STR_PAD_LEFT);
         $hash_total = 0;
         $hash = 0;
+
+        $presum = substr(round(($presum-floor($presum)),2),2);
+
+        if (substr($presum,0,1) == 0) {
+            $presum = substr($presum,1);
+        }
+
+        if ($presum == 1) {
+            $inwords .= ' AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
+        }
+        elseif ($presum > 1) {
+            $inwords .= ' AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
+        }
+        else {
+            $inwords .= '';
+        }
 
         $str="1523412453";
         $num1 = (substr($acct, 6 , 1));
@@ -243,6 +262,8 @@ class ImportController extends Controller
 
         $data = [ 'acics'           => $acics,
                   'hash_total'      => $hash_total,
+                  'sum'             => $sum,
+                  'inwords'        => $inwords,
                    ];
         if ($acics->isEmpty()) {
             return response()->json(['error' => 'Controller'], 400);
@@ -280,6 +301,42 @@ class ImportController extends Controller
         /*Excel::store(new ExportCodes, 'codes.xlsx','public/palawan');
         return redirect()->back()->with('success', 'File imported successfully.');*/
     }
+
+
+    #Helper Functions
+
+    function spellNumber($presum) 
+    {
+        $words = [
+            0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine',
+            10 => 'ten', 11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen', 16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen',
+            20 => 'twenty', 30 => 'thirty', 40 => 'forty', 50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty', 90 => 'ninety'
+        ];
+    
+        if ($presum < 20) {
+            return $words[$presum];
+        }
+    
+        if ($presum < 100) {
+            return $words[(($presum / 10) * 10)-($presum % 10)] . '-' . $this->spellNumber($presum % 10);
+        }
+    
+        if ($presum < 1000) {
+            return $words[$presum / 100] . ' hundred ' . $this->spellNumber($presum % 100);
+        }
+    
+        if ($presum < 1000000) {
+            return $this->spellNumber($presum / 1000) . ' thousand ' . $this->spellNumber($presum % 1000);
+        }
+
+        if ($presum < 1000000000) {
+            return $this->spellNumber($presum / 1000000) . ' million ' . $this->spellNumber($presum % 1000000);
+        }    
+
+        return 'Number out of range';
+    }
+
+
 }
 
 /*For addition
