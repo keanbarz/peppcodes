@@ -75,11 +75,11 @@ class ImportController extends Controller
             $forcancel = peppcodes::whereBetween('tranx_date', [$startDate,$endDateRange
             ])->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
             ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('status', 'like', '%' . 'unclaimed' . '%')->get();
+            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('status', 'unclaimed')->get();
         }
         else
         {$forcancel = peppcodes::whereBetween('tranx_date', [$startDate,$endDateRange
-            ])->where('sender', 'like', '%' . $lookup . '%')->where('status', 'like', '%' . 'unclaimed' . '%')->get();}
+            ])->where('sender', 'like', '%' . $lookup . '%')->where('status',  'unclaimed')->get();}
 
         return view('peppcodes', ['years' => $years, 'forcancel' => $forcancel]);
     }
@@ -110,11 +110,12 @@ class ImportController extends Controller
             $lookup = Auth::user()->field_office;
         }
 
+
         //roxi exclusive
         if (Auth::user()->field_office == 'roxi' || $request->field == 'roxi') {
             $search = peppcodes::query()->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
             ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->where('status', 'like', '%' . $request->status . '%');
+            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->where('status', 'like', $request->status . '%');
             $searchf = $search->where('sender', 'like', '%' . $request->program . '%');
             $results = $searchf->where('receiver', 'like', '%' . $request->search . '%')->paginate(15);
         }
@@ -128,7 +129,7 @@ class ImportController extends Controller
         //any other field office
         else
         {$search = peppcodes::query()->where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')
-            ->where('status', 'like', '%' . $request->status . '%');
+            ->where('status', 'like', $request->status . '%');
             $searchf = $search->where('sender', 'like', '%' . $request->program . '%');
         $results = $searchf->where('receiver', 'like', '%' . $request->search . '%')->where('sender', 'like', '%' . $request->field . '%')->paginate(15);}
 
@@ -152,17 +153,18 @@ class ImportController extends Controller
         else {
             $lookup = Auth::user()->field_office;
         }
+
         
         if (Auth::user()->field_office == 'roxi') {
             $peppcodes = peppcodes::query()->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')
             ->where('sender', 'not like', '%' . 'docfo' . '%')
             ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
             ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')
-        ->where('status', 'like', '%' . $request->status . '%')->where('sender', 'like', '%' . $request->field . '%')->where('sender', 'like', '%' . $request->program . '%')->get();
+        ->where('status',  'like', $request->status . '%' )->where('sender', 'like', '%' . $request->field . '%')->where('sender', 'like', '%' . $request->program . '%')->get();
         }
         else
         {$peppcodes = peppcodes::query()->where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')
-        ->where('status', 'like', '%' . $request->status . '%')->where('sender', 'like', '%' . $request->field . '%')->where('sender', 'like', '%' . $request->program . '%')->get();}
+        ->where('status',  'like', $request->status . '%' )->where('sender', 'like', '%' . $request->field . '%')->where('sender', 'like', '%' . $request->program . '%')->get();}
         $status = ucwords($request->status);
         $year = $request->year;
         Log::info($peppcodes);
