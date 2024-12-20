@@ -51,7 +51,8 @@
             }
             .prepared {
                 position: absolute;
-                bottom: 10;
+                bottom: 35;
+                left: -3;
                 width: 100%;
                 padding: 5px;
             }
@@ -147,27 +148,61 @@
             </table>
         </div>
         <div class="prepared">
-            <div class="container" style="width: 100%; display:table;">
-                <div class="box" style="width: 30%;display: table-cell;">
+            <div class="container" style="width: 100%; display:table; justify-content: space-between;">
+                <div class="box" style="width: 36.10%;display: table-cell;"><br>
                     <table>
                         <tr>
-                            <th colspan="3">CANCELLED CHECKS</th>
+                            <td colspan="3" style="padding: 1px; text-align: center;">CANCELLED CHECKS</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1px; text-align: center;">CHECK NO</td>
+                            <td style="padding: 1px; text-align: center;">CHECK DATE</td>
+                            <td style="padding: 1px; text-align: center;">REMARKS</td>
                         </tr>
                     </table>
                 </div>
-                <div class="box" style="width: 43%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10; text-align: center;">LANDBANK OF THE PHILIPPINES<br>
-                        C. M. RECTO<br>
-                        C. M. RECTO, DAVAO CITY<br>
-                        12/13/2024<br>
-                        <strong>ADVICE OF CHECKS ISSUED AND CANCELLED</strong><br>
-                        REPORT SUMMARY
+                <div class="box" style="width: 1%;display: table-cell;"></div>
+                <div class="box" style="width: 22.81%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; white-space: nowrap; left: 3;">CERTIFIED CORRECT BY:<br>
+                        ___________________<br>
+                        <span style="font-size: 9;">NOVIE JANE B. PANIAGUA</span><br>
+                        <br>
+                        APPROVED BY:<br>
+                        ___________________<br>
+                        <span style="font-size:9;">ATTY. JASON P. BALAIS</span>
                     </p>
-                </div>                
-                <div class="box" style="width: 27%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10;">
+                </div>
+                <div class="box" style="width: 5%;display: table-cell;"></div>                
+                <div class="box" style="width: 18.55%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; ;">VERIFIED BY:<br>
+                        ________________<br>
+                        <br>
+                        <br>
+                        POSTED BY:<br>
+                        ________________
+                    </p>
+                </div>
+                <div class="box" style="width: 18.55%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10;">RECEIVED BY:<br>
+                        ________________<br>
+                        <br>
+                        <br>
+                        DELIVERED BY:<br>
+                        ________________
                     </p>
                 </div>  
+            </div>
+            <div>
+                <div class="container" style="width: 100%; display:table;">
+                    <div class="box" style="width: 30%;display: table-cell;">
+                        <p style="font-family: sans-serif; font-size: 10;">**FILENAME: &nbsp;D:\DOLEacicno.txt</p>
+                    </div>
+                    <div class="box" style="width: 30%;display: table-cell;">
+                        <p style="font-family: sans-serif; font-size: 10; text-align: right;">** FOR LBP USE ONLY **<br>
+                            <span>Page 1 of 2</span>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="page-break">
