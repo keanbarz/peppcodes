@@ -213,7 +213,7 @@ class ImportController extends Controller
         $sum = $presum;
         $inwords = strtoupper($this->spellNumber($presum));
         $acct = '2016903259'; #str_replace("-", "", $account_number);
-        $acicpad = '0002412143'; #str_pad(str_replace("-","",$request->acic_no),10, '0', STR_PAD_LEFT);
+        $acicpad = '0002412139'; #str_pad(str_replace("-","",$request->acic_no),10, '0', STR_PAD_LEFT);
         $ncapad = '0000008798'; #str_pad(str_replace("-","",$request->nca_number),10,'0', STR_PAD_LEFT);
         $hash_total = 0;
         $hash = 0;
@@ -225,13 +225,13 @@ class ImportController extends Controller
         }
 
         if ($presum == 1) {
-            $inwords .= ' AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
+            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
         }
         elseif ($presum > 1) {
-            $inwords .= ' AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
+            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
         }
         else {
-            $inwords .= '';
+            $inwords .= ' PESOS';
         }
 
         $str="1523412453";
@@ -260,7 +260,7 @@ class ImportController extends Controller
             $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
             //Reset individual hash
             $hash = 0;}
-            log::info($hash_total);
+            log::info(number_format($hash_total,2));
 
         $data = [ 'acics'           => $acics,
                   'hash_total'      => $hash_total,
