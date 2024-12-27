@@ -153,7 +153,6 @@ class ImportController extends Controller
         else {
             $lookup = Auth::user()->field_office;
         }
-
         
         if (Auth::user()->field_office == 'roxi') {
             $peppcodes = peppcodes::query()->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')
@@ -207,72 +206,113 @@ class ImportController extends Controller
         }
     }
 
+    public function acicdel()
+    {
+        acic::truncate();
+        return redirect()->back();
+    }
+
     public function acicPDF(Request $request)
     {   $acics = acic::all();
         $presum = $acics->sum('amount');
         $sum = $presum;
         $inwords = strtoupper($this->spellNumber($presum));
         $acct = '2016903259'; #str_replace("-", "", $account_number);
-        $acicpad = '0002412139'; #str_pad(str_replace("-","",$request->acic_no),10, '0', STR_PAD_LEFT);
-        $ncapad = '0000008798'; #str_pad(str_replace("-","",$request->nca_number),10,'0', STR_PAD_LEFT);
+        $acicpad = str_pad(str_replace("-","",$request->input('acicno')),10, '0', STR_PAD_LEFT);
+        $ncapad = str_pad(str_replace("-","",$request->input('nca')),10,'0', STR_PAD_LEFT);
         $hash_total = 0;
         $hash = 0;
 
-        $presum = substr(round(($presum-floor($presum)),2),2);
+        if ($request->input('request') == 'pdf') {
+        
+            $presum = substr(round(($presum-floor($presum)),2),2);
 
-        if (substr($presum,0,1) == 0) {
-            $presum = substr($presum,1);
-        }
-
-        if ($presum == 1) {
-            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
-        }
-        elseif ($presum > 1) {
-            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
-        }
-        else {
-            $inwords .= ' PESOS';
-        }
-
-        $str="1523412453";
-        $num1 = (substr($acct, 6 , 1));
-        $num2 = (substr($acicpad, 5 , 1));
-        $num3 = (substr($ncapad, 8 , 1));
-
-        foreach($acics as $acic) {
-            $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
-            $num4 = (substr($checkpad, 7 , 1));
-            for ($startIndex = 0; $startIndex <= 9; $startIndex++){
-                $hash += (intval(substr($acct, $startIndex, 1)) + intval(substr($acicpad, $startIndex, 1)) + intval(substr($ncapad, $startIndex, 1)) + intval(substr($checkpad, $startIndex, 1))) * intval(substr($str, $startIndex, 1));
+            if (substr($presum,0,1) == 0) {
+                $presum = substr($presum,1);
             }
-            if ($num1 == 0){
-                $num1 = 1;
-            };
-            if ($num2 == 0){
-                $num2 = 1;
-            };
-            if ($num3 == 0){
-                $num3 = 1;
-            };
-            if ($num4 == 0){
-                $num4 = 1;
-            };
-            $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
-            //Reset individual hash
-            $hash = 0;}
-            log::info(number_format($hash_total,2));
 
-        $data = [ 'acics'           => $acics,
-                  'hash_total'      => $hash_total,
-                  'sum'             => $sum,
-                  'inwords'        => $inwords,
-                   ];
-        if ($acics->isEmpty()) {
-            return response()->json(['error' => 'Controller'], 400);
+            if ($presum == 1) {
+                $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
+            }
+            elseif ($presum > 1) {
+                $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
+            }
+            else {
+                $inwords .= ' PESOS';
+            }
+
+            $str="1523412453";
+            $num1 = (substr($acct, 6 , 1));
+            $num2 = (substr($acicpad, 5 , 1));
+            $num3 = (substr($ncapad, 8 , 1));
+
+            foreach($acics as $acic) {
+                $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
+                $num4 = (substr($checkpad, 7 , 1));
+                for ($startIndex = 0; $startIndex <= 9; $startIndex++){
+                    $hash += (intval(substr($acct, $startIndex, 1)) + intval(substr($acicpad, $startIndex, 1)) + intval(substr($ncapad, $startIndex, 1)) + intval(substr($checkpad, $startIndex, 1))) * intval(substr($str, $startIndex, 1));
+                }
+                if ($num1 == 0){
+                    $num1 = 1;
+                };
+                if ($num2 == 0){
+                    $num2 = 1;
+                };
+                if ($num3 == 0){
+                    $num3 = 1;
+                };
+                if ($num4 == 0){
+                    $num4 = 1;
+                };
+                $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
+                //Reset individual hash
+                $hash = 0;}
+
+            $data = [ 'acics'           => $acics,
+                    'acicno'          => $request->input('acicno'),
+                    'nca'             => $request->input('nca'),
+                    'hash_total'      => $hash_total,
+                    'sum'             => $sum,
+                    'inwords'        => $inwords,
+                    ];
+            if ($acics->isEmpty()) {
+                return response()->json(['error' => 'Controller'], 400);
+            }
+            else {
+            $pdf = PDF::loadView('pdf.acicpdf', $data); 
+            return $pdf->stream('example.pdf');
+            }
         }
-        else {
-        $pdf = PDF::loadView('pdf.acicpdf', $data); 
-        return $pdf->stream('example.pdf');
+        elseif ($request->input('request') == 'txt')
+        {
+            // Define the file name
+            $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . ".txt";
+
+            // Open the file for writing
+            $file = fopen($fileName, "w");
+
+            // Add data rows
+            foreach ($acics as $row) {
+                $date = explode('/', $row->check_date);
+
+
+                $line = $acct . str_pad($row->check_number,10,'0', STR_PAD_LEFT) . str_replace("-","",$request->input('acicno')) . str_pad(str_replace("-","",$request->input('nca')),7,'0', STR_PAD_LEFT)
+                 . "****" . $date[2] . str_pad($date[0], 2, '0', STR_PAD_LEFT) . str_pad($date[1], 2, '0', STR_PAD_LEFT) . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
+                 . substr($row->payee,0,40) . str_repeat(" ", 40-(strlen(substr($row->payee,0,40)))). $row->uacs . "  ";
+                fwrite($file, $line);
+            }
+
+            // Close the file
+            fclose($file);
+
+            // Provide file as a download
+            header('Content-Type: text/plain');
+            header('Content-Disposition: attachment; filename="' . $fileName . '"');
+            readfile($fileName);
+
+            // Optionally delete the file from server after download
+            unlink($fileName);
+
         }
     }
 

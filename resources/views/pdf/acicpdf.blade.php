@@ -88,11 +88,11 @@
                     CROSSING, DAVAO CITY</p>
                 </div>                
                 <div class="box" style="width: 27%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10;">ACIC NO.: insert code<br>
+                    <p style="font-family: sans-serif; font-size: 10;">ACIC NO.: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$acicno}}<br>
                     ORG CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160010300011<br>
                     FUNDING SOURCE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;01101101<br>
                     AREA CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1190<br>
-                    ALLOCATION NO : insert code
+                    ALLOCATION NO : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$nca}}
                     </p>
                 </div>  
             </div>
@@ -117,9 +117,9 @@
                     </tr>
                     @foreach ($acics as $acic)
                         <tr>
-                            <td style="font-family: sans-serif; font-size: 10; text-align:right;">{{ str_pad($acic->check_number,10,'0', STR_PAD_LEFT)}} </td>
+                            <td style="font-family: sans-serif; font-size: 10; text-align:right; ">{{ str_pad($acic->check_number,10,'0', STR_PAD_LEFT)}} </td>
                             <td style="font-family: sans-serif; font-size: 10; text-align:center;">{{ preg_replace('/(\d{1,2})\/(\d)\/(\d{4})/', '$1/0$2/$3',$acic->check_date)}} </td>
-                            <td style="font-family: sans-serif; font-size: 10;">{{ substr($acic->payee,0,30)}} </td>
+                            <td style="font-family: sans-serif; font-size: 10; ">{{ substr($acic->payee,0,40)}} </td>
                             <td style="text-align: right;">{{ number_format(($acic->amount),2) }} </td>
                             <td style="font-family: sans-serif; font-size: 10;  text-align:center;">{{ $acic->uacs}} </td>
                             <td> </td>
@@ -143,7 +143,7 @@
                 <tbody>
                     <tr>
                         <td style="text-align:left; border: none;  width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 0px;">{{$inwords}}</td>
+                        <td style="text-align:left; border: none;  width:75%; padding: 0px;">{{$inwords}}<br><span style="color:white;">placeholder</span></td>
                         <td style="text-align:left; border: none;  width:4.68%; padding: 0px;"></td>
                     </tr>
                 </tbody>
@@ -219,7 +219,7 @@
             <div>
                 <div class="container" style="width: 100%; display:table;">
                     <div class="box" style="width: 30%;display: table-cell;">
-                        <p style="font-family: sans-serif; font-size: 10;">**FILENAME: &nbsp;D:\DOLEacicno.txt</p>
+                        <p style="font-family: sans-serif; font-size: 10;">**FILENAME: &nbsp;D:\DOLE{{str_replace("-","",$acicno)}}.txt</p>
                     </div>
                     <div class="box" style="width: 30%;display: table-cell;">
                         <p style="font-family: sans-serif; font-size: 10; text-align: right;"><strong>** FOR LBP USE ONLY **</strong><br>
@@ -266,7 +266,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:20%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:75%; padding: 0px;">{{$inwords}}</td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:75%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:5%; padding: 0px;"></td>
                     </tr>
                 </table>
@@ -338,11 +338,11 @@
                     CROSSING, DAVAO CITY</p>
                 </div>                
                 <div class="box" style="width: 27%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10;">ACIC NO.: insert code<br>
+                    <p style="font-family: sans-serif; font-size: 10;">ACIC NO.: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$acicno}}<br>
                     ORG CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160010300011<br>
                     FUNDING SOURCE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;01101101<br>
                     AREA CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1190<br>
-                    ALLOCATION NO : insert code
+                    ALLOCATION NO : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$nca}}
                     </p>
                 </div>  
             </div>
@@ -392,7 +392,7 @@
                 <tbody>
                     <tr>
                         <td style="text-align:left; border: none;  width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 0px;">{{$inwords}}</td>
+                        <td style="text-align:left; border: none;  width:75%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
                         <td style="text-align:left; border: none;  width:4.68%; padding: 0px;"></td>
                     </tr>
                 </tbody>
@@ -467,7 +467,7 @@
             <div>
                 <div class="container" style="width: 100%; display:table;">
                     <div class="box" style="width: 30%;display: table-cell;">
-                        <p style="font-family: sans-serif; font-size: 10;">**FILENAME: &nbsp;D:\DOLEacicnoBTR.txt</p>
+                        <p style="font-family: sans-serif; font-size: 10;">**FILENAME: &nbsp;D:\DOLE{{str_replace("-","",$acicno)}}BTR.txt</p>
                     </div>
                     <div class="box" style="width: 30%;display: table-cell;">
                         <p style="font-family: sans-serif; font-size: 10; text-align: right;"><strong>** FOR BTR USE ONLY **</strong><br>
@@ -513,7 +513,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:20%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:75%; padding: 0px;">{{$inwords}}</td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:75%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:5%; padding: 0px;"></td>
                     </tr>
                 </table>

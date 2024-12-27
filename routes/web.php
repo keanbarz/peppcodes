@@ -13,7 +13,9 @@ Route::get('/', function () {
 Route::get('/dashboard', [ImportController::class, 'dashboard'] )->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/peppcodes/generate-pdf', [Importcontroller::class, 'generatePDF']);
-Route::get('/importacic/pdf', [Importcontroller::class, 'acicPDF']);
+Route::post('/importacic/pdf', [Importcontroller::class, 'acicPDF']);
+Route::get('/importacic/del', [Importcontroller::class, 'acicdel']);
+Route::get('/importacic/txt', [Importcontroller::class, 'acictxt'])->name('acictxt');;
 
 Route::get('/peppcodes/notify', [Importcontroller::class, 'notify'])->middleware(['auth', 'verified'])->name('notify');
 Route::get('/peppcodes/export', [Importcontroller::class, 'export'])->middleware(['auth', 'verified'])->name('export');

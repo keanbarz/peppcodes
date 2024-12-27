@@ -7,14 +7,33 @@
                     @if (Auth::user()->field_office !== "")
                         <p>Experimental, for Admin only.</p>
                     @else
-                        <form action="{{ route('importacic') }}" method="POST" enctype="multipart/form-data">
+                        @if ($acics->count() == 0)
+                            <form action="{{ route('importacic') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                                <input type="file" name="file">
+                                <button type="submit" class="xx">Upload</button>
+                            </form>
+                        @else
+                        <form action="/importacic/pdf" method="post" enctype="multipart/form-data">
                         @csrf
-                            <input type="file" name="file">
-                            <button type="submit" class="xx">Upload</button>
-                            @if (!empty($acics))
-                            <a href="/importacic/pdf"><button button type="button" class="xx">Generate PDF</button></a>
-                            @endif
+                            <label for="acicno">ACIC NO.:</label>
+                            <input type="text" name="acicno" style="color:black;" 
+                            maxlength="9" pattern="\d{2}-\d{2}-\d{3}" placeholder="##-##-###" required>
+                            <label for="nca">NCA:</label>
+                            <input type="text" name="nca" placeholder ="######-#" style="color:black;"
+                            maxlength="8" pattern="\d{6}-\d{1}" required>
+                            <label for="request">Generate</label>
+                            <select style="color:black;" name="request" required>
+                                <option value="" disabled>Choose</option>
+                                <option value="pdf">PDF</option>
+                                <option value="txt">TXT File</option>
+                            </select>
+                            <button button type="submit" class="xx">Generate</button>
+                            <a href="/importacic/del"><button button type="button" class="xx">Clear Contents</button></a>
                         </form>
+                        @csrf
+                        </form>
+                        @endif
                     @endif
                 </div>
             </div>
