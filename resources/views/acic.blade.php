@@ -1,7 +1,7 @@
 <x-app-layout>
 
     <div class="py-4">
-        <div class=" mx-auto sm:px-6 lg:px-8 py-4"><!--max-w-7xl-->
+        <div class=" mx-auto sm:px-6 lg:px-8 py-4">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @if (Auth::user()->field_office !== "")
@@ -26,7 +26,8 @@
                             <select style="color:black;" name="request" required>
                                 <option value="" disabled>Choose</option>
                                 <option value="pdf">PDF</option>
-                                <option value="txt">TXT File</option>
+                                <option value="lbp">LBP Text File</option>
+                                <option value="btr">BTR Text File</option>
                             </select>
                             <button button type="submit" class="xx">Generate</button>
                             <a href="/importacic/del"><button button type="button" class="xx">Clear Contents</button></a>

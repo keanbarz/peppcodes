@@ -222,52 +222,50 @@ class ImportController extends Controller
         $ncapad = str_pad(str_replace("-","",$request->input('nca')),10,'0', STR_PAD_LEFT);
         $hash_total = 0;
         $hash = 0;
+       
+        $presum = substr(round(($presum-floor($presum)),2),2);
 
+        if (substr($presum,0,1) == 0) {
+            $presum = substr($presum,1);
+        }
+
+        if ($presum == 1) {
+            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
+        }
+        elseif ($presum > 1) {
+            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
+        }
+        else {
+            $inwords .= ' PESOS';
+        }
+
+        $str="1523412453";
+        $num1 = (substr($acct, 6 , 1));
+        $num2 = (substr($acicpad, 5 , 1));
+        $num3 = (substr($ncapad, 8 , 1));
+
+        foreach($acics as $acic) {
+            $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
+            $num4 = (substr($checkpad, 7 , 1));
+            for ($startIndex = 0; $startIndex <= 9; $startIndex++){
+                $hash += (intval(substr($acct, $startIndex, 1)) + intval(substr($acicpad, $startIndex, 1)) + intval(substr($ncapad, $startIndex, 1)) + intval(substr($checkpad, $startIndex, 1))) * intval(substr($str, $startIndex, 1));
+            }
+            if ($num1 == 0){
+                $num1 = 1;
+            };
+            if ($num2 == 0){
+                $num2 = 1;
+            };
+            if ($num3 == 0){
+                $num3 = 1;
+            };
+            if ($num4 == 0){
+                $num4 = 1;
+            };
+            $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
+            //Reset individual hash
+            $hash = 0;}
         if ($request->input('request') == 'pdf') {
-        
-            $presum = substr(round(($presum-floor($presum)),2),2);
-
-            if (substr($presum,0,1) == 0) {
-                $presum = substr($presum,1);
-            }
-
-            if ($presum == 1) {
-                $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
-            }
-            elseif ($presum > 1) {
-                $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
-            }
-            else {
-                $inwords .= ' PESOS';
-            }
-
-            $str="1523412453";
-            $num1 = (substr($acct, 6 , 1));
-            $num2 = (substr($acicpad, 5 , 1));
-            $num3 = (substr($ncapad, 8 , 1));
-
-            foreach($acics as $acic) {
-                $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
-                $num4 = (substr($checkpad, 7 , 1));
-                for ($startIndex = 0; $startIndex <= 9; $startIndex++){
-                    $hash += (intval(substr($acct, $startIndex, 1)) + intval(substr($acicpad, $startIndex, 1)) + intval(substr($ncapad, $startIndex, 1)) + intval(substr($checkpad, $startIndex, 1))) * intval(substr($str, $startIndex, 1));
-                }
-                if ($num1 == 0){
-                    $num1 = 1;
-                };
-                if ($num2 == 0){
-                    $num2 = 1;
-                };
-                if ($num3 == 0){
-                    $num3 = 1;
-                };
-                if ($num4 == 0){
-                    $num4 = 1;
-                };
-                $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
-                //Reset individual hash
-                $hash = 0;}
-
             $data = [ 'acics'           => $acics,
                     'acicno'          => $request->input('acicno'),
                     'nca'             => $request->input('nca'),
@@ -283,7 +281,7 @@ class ImportController extends Controller
             return $pdf->stream('example.pdf');
             }
         }
-        elseif ($request->input('request') == 'txt')
+        elseif ($request->input('request') == 'lbp')
         {
             // Define the file name
             $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . ".txt";
@@ -295,12 +293,15 @@ class ImportController extends Controller
             foreach ($acics as $row) {
                 $date = explode('/', $row->check_date);
 
-
                 $line = $acct . str_pad($row->check_number,10,'0', STR_PAD_LEFT) . str_replace("-","",$request->input('acicno')) . str_pad(str_replace("-","",$request->input('nca')),7,'0', STR_PAD_LEFT)
                  . "****" . $date[2] . str_pad($date[0], 2, '0', STR_PAD_LEFT) . str_pad($date[1], 2, '0', STR_PAD_LEFT) . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
-                 . substr($row->payee,0,40) . str_repeat(" ", 40-(strlen(substr($row->payee,0,40)))). $row->uacs . "  ";
+                 . substr($row->payee,0,40) . str_repeat(" ", 40-(strlen(substr($row->payee,0,40)))). $row->uacs . "  " . "\r\n";
                 fwrite($file, $line);
             }
+
+            $footer = '999999900000000000000000' . str_pad(str_replace(",","",str_replace(".","",(number_format($hash_total,2)))),19,'0',STR_PAD_LEFT) 
+            . str_pad($acics->count(),5,'0',STR_PAD_LEFT) . "0\r\n";
+            fwrite($file, $footer);
 
             // Close the file
             fclose($file);
