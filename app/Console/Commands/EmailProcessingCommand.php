@@ -57,14 +57,14 @@ class EmailProcessingCommand extends Command
                     // Email and File Password Template
                     $destinationEmail = $this->getEmailForFolder($folderName, $subFolderName);
                     $subject = $folderName . ' ' . $subFolderName . ' - Unclaimed Palawan Transaction/s as of ' . date('m/d/Y');  // Replace with your desired subject
-
+                    $password = $subFolderName[0] . 'dole11' . strtolower($folderName) . date('mdy');
                     // Send Mail, Skip if Empty
                     if (empty($files)) {
                         $this->info(sprintf("%02d", $count) . '. ' . $folderName . '-' . $subFolderName . ' has no Transactions. Skipping sending email.');
                         //\Log::info($count);
                     }
                     else {$this->info(sprintf("%02d", $count) . '. Sending Transactions to ' . $folderName . '-' . $subFolderName . '... (' . $destinationEmail . ')');
-                       $this->sendEmail($destinationEmail, $files, $subject, $newDateString, $subFolderName, $xnewDateString);
+                       $this->sendEmail($destinationEmail, $files, $subject, $newDateString, $subFolderName, $xnewDateString, $password);
                     }
 
                 // Delete files after sending; Increment Log Count
@@ -155,12 +155,13 @@ class EmailProcessingCommand extends Command
      * @param string $subject
      * @param string $content
      */
-    function sendEmail($destinationEmail, $files, $subject, $newDateString, $subFolderName, $xnewDateString)
+    function sendEmail($destinationEmail, $files, $subject, $newDateString, $subFolderName, $xnewDateString, $password)
     {
         $mailData = [
             'subject' => $subject,
             'xnewDateString' => $xnewDateString,
-            'newDateString' => $newDateString
+            'newDateString' => $newDateString,
+            'password' => $password,
         ];
 
         Mail::send('email', $mailData, function ($message) use ($destinationEmail, $subject, $files, $subFolderName) {

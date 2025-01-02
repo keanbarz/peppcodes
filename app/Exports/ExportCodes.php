@@ -23,10 +23,11 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
     protected $field;
     protected $program;
 
-    public function __construct($field, $program)
+    public function __construct($field, $program,$password)
     {
         $this->field = $field;
         $this->program = $program;
+        $this->password = $password;
     }
 
     public function collection()
@@ -79,19 +80,21 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                 $sheet->insertNewRowBefore(1);
                 $highestRow = $sheet->getHighestRow();
                 $sheet->getStyle('F1')->getProtection()->setLocked(\PhpOffice\PhpSpreadsheet\Style\Protection::PROTECTION_UNPROTECTED);
+                $sheet->getProtection('A1:F' . $highestRow)->setSelectLockedCells(false);  // Prevent selecting locked cells
 
 
                 // Adjust column widths to fit content
                 $sheet->getColumnDimension('A')->setWidth(13);
                 $sheet->getColumnDimension('B')->setWidth(13);
                 $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(40);
+                $sheet->getColumnDimension('D')->setWidth(45);
                 $sheet->getColumnDimension('E')->setWidth(40);
-                $sheet->getColumnDimension('F')->setWidth(15);
+                $sheet->getColumnDimension('F')->setWidth(25);
 
                 $sheet->getStyle('F2:F' . $highestRow)->getNumberFormat()
                 ->setFormatCode('#,##0.00');
                 $sheet->setCellValue('A1', 'PASSWORD:');
+                $sheet->setCellValue('F1', 'replace with password here');
                 $sheet->mergeCells('A1:E1');
                 $sheet->mergeCells('A' . $highestRow . ':B' . $highestRow);
                 $sheet->mergeCells('D' . $highestRow . ':E' . $highestRow);
@@ -109,42 +112,42 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                     'font' => [
                         'bold' => true,
                     ],
-                    'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                    ],
-                ]);
-
-                $sheet->getStyle('A1:F' . $highestRow)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                             'color' => ['argb' => '000000'], // Black borders
                         ],
                     ],
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    ],
                 ]);
 
-                //Conditional Formatting
-                $targetCell = 'F1';
+                $sheet->getStyle('A2:F' . $highestRow)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'], // Black borders
+                        ],
+                    ],
+                    'font' => [
+                        'color' => ['argb' => 'FFFFFFFF'],
+                    ],
+                ]);
 
                 // Create a new conditional formatting rule
                 $conditional = new Conditional();
                 $conditional->setConditionType(Conditional::CONDITION_EXPRESSION);
-                $conditional->setConditions(['$F$1="password"']); // Value to check
+                $conditional->setConditions(['$F$1="' . $this->password . '"']); // Value to check
                 $conditional->getStyle()->applyFromArray([
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['argb' => 'FFFFC7CE'], // Light red background
-                    ],
                     'font' => [
-                        'bold' => true,
-                        'color' => ['argb' => '9C0006'], // Dark red text
+                        'color' => ['argb' => '000000'],
                     ],
                 ]);
 
                 // Apply the conditional formatting to the target cell
                 $sheet->getStyle('A2:F' . $highestRow)->setConditionalStyles([$conditional]);
-
 
             },
 

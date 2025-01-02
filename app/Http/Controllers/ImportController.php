@@ -337,11 +337,11 @@ class ImportController extends Controller
             foreach ($programs as $program) {
                 try {
                     $password = $program[0] . 'dole11' . strtolower($field) . date('mdy');
-                    log::info($password);
-                    Excel::store(new ExportCodes($field,$program), 'palawan/' . $field . '/' . $program . '/' . $field . '_' . $program . '.xlsx','public');
+                    Excel::store(new ExportCodes($field,$program,$password), 'palawan/' . $field . '/' . $program . '/' . $field . '_' . $program . '.xlsx','public');
                 } catch (\Exception $e) {}
             }
         }
+        Artisan::call('email:process');
         return redirect()->back()->with('success', 'File imported successfully.');
         /*Excel::store(new ExportCodes, 'codes.xlsx','public/palawan');
         return redirect()->back()->with('success', 'File imported successfully.');*/
