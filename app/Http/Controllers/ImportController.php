@@ -315,6 +315,35 @@ class ImportController extends Controller
             unlink($fileName);
 
         }
+        elseif ($request->input('request') == 'btr')
+        {
+            // Define the file name
+            $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . "BTR.txt";
+
+            // Open the file for writing
+            $file = fopen($fileName, "w");
+
+            // Add data rows
+            foreach ($acics as $row) {
+                $line = '1190510715160010300011' . str_pad(substr($request->input('nca'),0,6),8,'0', STR_PAD_LEFT) . '0' . substr($request->input('nca'),7,1) 
+                . $request->input('ncadate') . '01101101' . substr($row->uacs,0,8) . '-' . substr($row->uacs,8,2) . '**' . str_pad($row->check_number,10,'0', STR_PAD_LEFT)
+                . '**' . str_pad($row->amount,14,' ', STR_PAD_LEFT) . str_pad(str_replace("-","",$request->input('acicno')),10,'0', STR_PAD_LEFT) 
+                . $row->check_date . '00002016-9032-59' ."\r\n";
+                fwrite($file, $line);
+            }
+
+            // Close the file
+            fclose($file);
+
+            // Provide file as a download
+            header('Content-Type: text/plain');
+            header('Content-Disposition: attachment; filename="' . $fileName . '"');
+            readfile($fileName);
+
+            // Optionally delete the file from server after download
+            unlink($fileName);
+
+        }
     }
 
     public function notify(Request $request)

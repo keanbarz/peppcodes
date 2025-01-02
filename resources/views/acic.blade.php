@@ -17,11 +17,14 @@
                         <form action="/importacic/pdf" method="post" enctype="multipart/form-data">
                         @csrf
                             <label for="acicno">ACIC NO.:</label>
-                            <input type="text" name="acicno" style="color:black;" 
+                            <input type="text" id="acicno" name="acicno" style="color:black;" 
                             maxlength="9" pattern="\d{2}-\d{2}-\d{3}" placeholder="##-##-###" required>
                             <label for="nca">NCA:</label>
-                            <input type="text" name="nca" placeholder ="######-#" style="color:black;"
+                            <input type="text" id="nca" name="nca" placeholder ="######-#" style="color:black;"
                             maxlength="8" pattern="\d{6}-\d{1}" required>
+                            <label for="ncadate">NCA DATE:</label>
+                            <input type="text" id="ncadate" name="ncadate" placeholder="mm/dd/yyyy" style="color:black;"
+                            maxlength="10" pattern="\d{2}/\d{2}/\d{4}" required>
                             <label for="request">Generate</label>
                             <select style="color:black;" name="request" required>
                                 <option value="" disabled>Choose</option>
@@ -32,8 +35,25 @@
                             <button button type="submit" class="xx">Generate</button>
                             <a href="/importacic/del"><button button type="button" class="xx">Clear Contents</button></a>
                         </form>
-                        @csrf
-                        </form>
+                        <script>
+                            document.getElementById('acicno').addEventListener('input', function (e) {
+                                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                                if (value.length > 2) value = value.slice(0, 2) + '-' + value.slice(2);
+                                if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5, 8);
+                                e.target.value = value; // Update the input value
+                            });
+                            document.getElementById('ncadate').addEventListener('input', function (e) {
+                                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                                if (value.length > 2) value = value.slice(0, 2) + '/' + value.slice(2);
+                                if (value.length > 5) value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                                e.target.value = value; // Update the input value
+                            });
+                            document.getElementById('nca').addEventListener('input', function (e) {
+                                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                                if (value.length > 6) value = value.slice(0, 6) + '-' + value.slice(6,7);
+                                e.target.value = value; // Update the input value
+                            });
+                        </script>
                         @endif
                     @endif
                 </div>
