@@ -336,6 +336,8 @@ class ImportController extends Controller
             $programs = ['GIP', 'TUPAD', 'SPES'];
             foreach ($programs as $program) {
                 try {
+                    $password = $program[0] . 'dole11' . strtolower($field) . date('mdy');
+                    log::info($password);
                     Excel::store(new ExportCodes($field,$program), 'palawan/' . $field . '/' . $program . '/' . $field . '_' . $program . '.xlsx','public');
                 } catch (\Exception $e) {}
             }

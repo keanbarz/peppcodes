@@ -3,11 +3,13 @@
 namespace App\Exports;
 
 use App\Models\peppcodes;
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -69,14 +71,15 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
             BeforeSheet::class => function (BeforeSheet $event) {
                 // Disable cell editing by protecting the active worksheet
                 $sheet = $event->sheet->getDelegate();
-                
                 $sheet->getProtection()->setSheet(true);
-                $sheet->getProtection()->setPassword('your-password'); // Set a password to protect cells
+                $sheet->getProtection()->setPassword('123'); // Set a password to protect cells
             },
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $sheet->insertNewRowBefore(1);
                 $highestRow = $sheet->getHighestRow();
+                $sheet->getStyle('F1')->getProtection()->setLocked(\PhpOffice\PhpSpreadsheet\Style\Protection::PROTECTION_UNPROTECTED);
+
 
                 // Adjust column widths to fit content
                 $sheet->getColumnDimension('A')->setWidth(13);
@@ -89,8 +92,7 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                 $sheet->getStyle('F2:F' . $highestRow)->getNumberFormat()
                 ->setFormatCode('#,##0.00');
                 $sheet->setCellValue('A1', 'PASSWORD:');
-                $sheet->mergeCells('A1:D1');
-                //$sheet->mergeCells('E1:F1');
+                $sheet->mergeCells('A1:E1');
                 $sheet->mergeCells('A' . $highestRow . ':B' . $highestRow);
                 $sheet->mergeCells('D' . $highestRow . ':E' . $highestRow);
                 $sheet->getStyle('A' . $highestRow . ':F' . $highestRow)->applyFromArray([
@@ -122,6 +124,26 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
+                //Conditional Formatting
+                $targetCell = 'F1';
+
+                // Create a new conditional formatting rule
+                $conditional = new Conditional();
+                $conditional->setConditionType(Conditional::CONDITION_EXPRESSION);
+                $conditional->setConditions(['$F$1="password"']); // Value to check
+                $conditional->getStyle()->applyFromArray([
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FFFFC7CE'], // Light red background
+                    ],
+                    'font' => [
+                        'bold' => true,
+                        'color' => ['argb' => '9C0006'], // Dark red text
+                    ],
+                ]);
+
+                // Apply the conditional formatting to the target cell
+                $sheet->getStyle('A2:F' . $highestRow)->setConditionalStyles([$conditional]);
 
 
             },
