@@ -77,9 +77,6 @@
             // Initial filtering on page load (optional)
             filterProducts();
         });
-
-
-
     </script>
 
     <div class="py-4">

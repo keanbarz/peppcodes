@@ -67,6 +67,7 @@ class ImportController extends Controller
         $currentYear = date('Y');
         $years = range('2023', $currentYear + 1);
 
+
         $endDate = Carbon::now();
         $startDate = $endDate->copy()->subDays(70)->format('m-d-y');
         $endDateRange = $endDate->copy()->subDays(55)->format('m-d-y');
@@ -94,10 +95,31 @@ class ImportController extends Controller
 
     public function dashboard(Request $request)
     {
-        $peppsum = peppcodes::query()->where('sender', 'like', '%' . Auth::user()->field_office . '%');
-        //$gip = $summary->where('')
+        $currentYear = date('Y');
+        $years = range('2023', $currentYear + 1);
+        $fv = $request->input('field');
+        $cy = $request->input('year');
+        if (Auth::user()->field_office == 'demo' || Auth::user()->field_office == '') {
+            if ($request->input('field') == ''){
+                $lookup = '';
+            }
+            else {
+                $lookup = $request->input('field');
+            }
+        }
+        else {
+            $lookup = Auth::user()->field_office;
+        }
 
-        return view('dashboard', compact('peppsum'));
+        if ($fv == 'roxi') {
+            $peppsum = peppcodes::where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
+            ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
+            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
+        }
+        else{
+            $peppsum = peppcodes::where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
+        }
+        return view('dashboard', compact('peppsum','years','fv','cy'));
     }
 
     public function filter(Request $request)

@@ -27,7 +27,7 @@
                             maxlength="10" pattern="\d{2}/\d{2}/\d{4}" required>
                             <label for="request">Generate</label>
                             <select style="color:black;" name="request" required>
-                                <option value="" disabled>Choose</option>
+                                <option value="" disabled selected>Choose</option>
                                 <option value="pdf">PDF</option>
                                 <option value="lbp">LBP Text File</option>
                                 <option value="btr">BTR Text File</option>
