@@ -79,7 +79,7 @@
                     <p style="font-family: sans-serif; font-size: 10;">LAND BANK OF THE PHILIPPINES<br>
                     C. M. RECTO<br>
                     C. M. RECTO, DAVAO CITY<br>
-                    DATE PREPARED 12/13/2024
+                    DATE PREPARED {{ \Carbon\Carbon::now()->format('n/j/Y') }}
                     </p>
                 </div>
                 <div class="box" style="width: 43%;display: table-cell;">
@@ -132,19 +132,18 @@
             <table>
                 <tbody>
                     <tr>
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:19.35%; padding: 1px;">TOTAL ACIC AMOUNT :&nbsp;</td>
-                        <td style="text-align:left; border: none;  width:50%; padding: 1px;">{{number_format($sum,2)}}</td>                        
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:20.97%; padding: 1px;">TOTAL NO. OF CHECKS :</td>
-                        <td style="text-align:left; border: none;  width:9.68%; padding: 1px;">&nbsp;{{$acics->count()}}</td>
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:21%; padding: 1px;">TOTAL ACIC AMOUNT :&nbsp;</td>
+                        <td style="text-align:left; border: none;  width:51%; padding: 1px;">&nbsp;{{number_format($sum,2)}}</td>                        
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:19%; padding: 1px;">TOTAL NO. OF CHECKS :</td>
+                        <td style="text-align:left; border: none;  width:9%; padding: 1px;">&nbsp;{{$acics->count()}}</td>
                     </tr>
                 </tbody>
             </table>
             <table>
                 <tbody>
                     <tr>
-                        <td style="text-align:left; border: none;  width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 0px;">{{$inwords}}<br><span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border: none;  width:4.68%; padding: 0px;"></td>
+                        <td style="text-align:left; border: none;  width:21%; padding: 0px; display:flex; white-space: nowrap;">AMOUNT IN WORDS :</td>
+                        <td style="text-align:left; border: none;  width:79%; padding: 0px; ">{{$inwords}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -240,7 +239,7 @@
                     <p style="font-family: sans-serif; font-size: 10; text-align: center;">LANDBANK OF THE PHILIPPINES<br>
                         C. M. RECTO<br>
                         C. M. RECTO, DAVAO CITY<br>
-                        12/13/2024<br>
+                        {{ \Carbon\Carbon::now()->format('n/j/Y') }}<br>
                         <strong>ADVICE OF CHECKS ISSUED AND CANCELLED</strong><br>
                         REPORT SUMMARY
                     </p>
@@ -256,18 +255,18 @@
                         <td colspan="3" style="border-top:none; border-left:none; border-right:none;"></td>
                     </tr>
                     <tr>
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:20%; padding: 1px;">NUMBER OF ACIC(S): &nbsp;</td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 1px;">1</td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:5%; padding: 0px;"></td>                        
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:19.35%; padding: 1px;">NUMBER OF ACIC(S): &nbsp;</td>
+                        <td style="text-align:left; border: none;  width:77%; padding: 1px;">1</td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:2.68%; padding: 0px;"></td>                        
                     </tr>
                     <tr>
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:20%; padding: 1px;">GRAND TOTAL :&nbsp;</td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 1px;">{{number_format($sum,2)}}</td>                        
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:19.35%; padding: 1px;">GRAND TOTAL :&nbsp;</td>
+                        <td style="text-align:left; border: none;  width:77%; padding: 1px;">{{number_format($sum,2)}}</td>                        
                     </tr>
                     <tr>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:20%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:75%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:5%; padding: 0px;"></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:77%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:2.68%; padding: 0px;"></td>
                     </tr>
                 </table>
             </div>
@@ -329,7 +328,7 @@
                     <p style="font-family: sans-serif; font-size: 10;">LAND BANK OF THE PHILIPPINES<br>
                     C. M. RECTO<br>
                     C. M. RECTO, DAVAO CITY<br>
-                    DATE PREPARED 12/13/2024
+                    DATE PREPARED {{ \Carbon\Carbon::now()->format('n/j/Y') }}
                     </p>
                 </div>
                 <div class="box" style="width: 43%;display: table-cell;">
@@ -367,8 +366,8 @@
                     @foreach ($acics as $acic)
                         <tr>
                             <td style="font-family: sans-serif; font-size: 10; text-align:right;">{{ str_pad($acic->check_number,10,'0', STR_PAD_LEFT)}} </td>
-                            <td style="font-family: sans-serif; font-size: 10; text-align:center;">{{ preg_replace('/(\d{1,2})\/(\d)\/(\d{4})/', '$1/0$2/$3',$acic->check_date)}} </td>
-                            <td style="font-family: sans-serif; font-size: 10;">{{ substr($acic->payee,0,30)}} </td>
+                            <td style="font-family: sans-serif; font-size: 10; text-align:left;">{{ preg_replace('/(\d{1,2})\/(\d)\/(\d{4})/', '$1/0$2/$3',$acic->check_date)}} </td>
+                            <td style="font-family: sans-serif; font-size: 10;">{{ substr($acic->payee,0,40)}} </td>
                             <td style="text-align: right;">{{ number_format(($acic->amount),2) }} </td>
                             <td style="font-family: sans-serif; font-size: 10;  text-align:center;">{{ $acic->uacs}} </td>
                             <td> </td>
@@ -380,20 +379,19 @@
         <div>
             <table>
                 <tbody>
-                    <tr>
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:19.35%; padding: 1px;">TOTAL ACIC AMOUNT :&nbsp;</td>
-                        <td style="text-align:left; border: none;  width:50%; padding: 1px;">{{number_format($sum,2)}}</td>                        
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:20.97%; padding: 1px;">TOTAL NO. OF CHECKS :</td>
-                        <td style="text-align:left; border: none;  width:9.68%; padding: 1px;">&nbsp;{{$acics->count()}}</td>
+                <tr>
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:21%; padding: 1px;">TOTAL ACIC AMOUNT :&nbsp;</td>
+                        <td style="text-align:left; border: none;  width:51%; padding: 1px;">&nbsp;{{number_format($sum,2)}}</td>                        
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:19%; padding: 1px;">TOTAL NO. OF CHECKS :</td>
+                        <td style="text-align:left; border: none;  width:9%; padding: 1px;">&nbsp;{{$acics->count()}}</td>
                     </tr>
                 </tbody>
             </table>
             <table>
                 <tbody>
                     <tr>
-                        <td style="text-align:left; border: none;  width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border: none;  width:4.68%; padding: 0px;"></td>
+                        <td style="text-align:left; border: none;  width:21%; padding: 0px; display:flex; white-space: nowrap;">AMOUNT IN WORDS :</td>
+                        <td style="text-align:left; border: none;  width:79%; padding: 0px; ">{{$inwords}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -487,7 +485,7 @@
                     <p style="font-family: sans-serif; font-size: 10; text-align: center;">LANDBANK OF THE PHILIPPINES<br>
                         C. M. RECTO<br>
                         C. M. RECTO, DAVAO CITY<br>
-                        12/13/2024<br>
+                        {{ \Carbon\Carbon::now()->format('n/j/Y') }}<br>
                         <strong>ADVICE OF CHECKS ISSUED AND CANCELLED</strong><br>
                         REPORT SUMMARY
                     </p>
@@ -503,18 +501,18 @@
                         <td colspan="3" style="border-top:none; border-left:none; border-right:none;"></td>
                     </tr>
                     <tr>
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:20%; padding: 1px;">NUMBER OF ACIC(S): &nbsp;</td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 1px;">1</td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:5%; padding: 0px;"></td>                        
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:19.35%; padding: 1px;">NUMBER OF ACIC(S): &nbsp;</td>
+                        <td style="text-align:left; border: none;  width:77%; padding: 1px;">1</td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:2.68%; padding: 0px;"></td>                        
                     </tr>
                     <tr>
-                        <td style="text-align:left; white-space: nowrap; border: none;  width:20%; padding: 1px;">GRAND TOTAL :&nbsp;</td>
-                        <td style="text-align:left; border: none;  width:75%; padding: 1px;">{{number_format($sum,2)}}</td>                        
+                        <td style="text-align:left; white-space: nowrap; border: none;  width:19.35%; padding: 1px;">GRAND TOTAL :&nbsp;</td>
+                        <td style="text-align:left; border: none;  width:77%; padding: 1px;">{{number_format($sum,2)}}</td>                        
                     </tr>
                     <tr>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:20%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:75%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:5%; padding: 0px;"></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:77%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:2.68%; padding: 0px;"></td>
                     </tr>
                 </table>
             </div>

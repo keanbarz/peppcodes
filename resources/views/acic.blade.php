@@ -14,7 +14,7 @@
                                 <button type="submit" class="xx">Upload</button>
                             </form>
                         @else
-                        <form action="/importacic/pdf" method="post" enctype="multipart/form-data">
+                        <form action="/importacic/pdf" method="post" enctype="multipart/form-data" target="_blank">
                         @csrf
                             <label for="acicno">ACIC NO.:</label>
                             <input type="text" id="acicno" name="acicno" style="color:black;" 

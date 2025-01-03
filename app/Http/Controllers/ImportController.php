@@ -1,20 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Exports\ExportCodes;
 use App\Imports\importcodes;
 use App\Imports\importacic;
 use App\Models\peppcodes;
 use App\Models\acic;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Artisan;
+
 
 
 
@@ -29,9 +29,8 @@ class ImportController extends Controller
         ]);
 
         try {
-            #demos::truncate(); //demo table, like dev -> prod
-        Excel::import(new importcodes, $request->file('file'));
-        return redirect()->back()->with('success', 'File imported successfully.');}
+            Excel::import(new importcodes, $request->file('file'));
+            return redirect()->back()->with('success', 'File imported successfully.');}
         catch (\Exception $e) {
             Log::error('Error importing file: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an error importing the file.');
@@ -46,9 +45,9 @@ class ImportController extends Controller
 
         try {
             acic::truncate();
-        Excel::import(new importacic, $request->file('file'));
-        acic::first()->delete();
-        return redirect()->back()->with('success', 'File imported successfully.');}
+            Excel::import(new importacic, $request->file('file'));
+            acic::first()->delete();
+            return redirect()->back()->with('success', 'File imported successfully.');}
         catch (\Exception $e) {
             Log::error('Error importing file: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an error importing the file.');
@@ -74,24 +73,23 @@ class ImportController extends Controller
         
         if (Auth::user()->field_office == 'roxi') {
             $forcancel = peppcodes::whereBetween('tranx_date', [$startDate,$endDateRange
-            ])->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
-            ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('status', 'unclaimed')->get();
+                ])->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
+                ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
+                ->where('sender', 'not like', '%' . 'dofo' . '%')->where('status', 'unclaimed')->get();
         }
-        else
-        {$forcancel = peppcodes::whereBetween('tranx_date', [$startDate,$endDateRange
-            ])->where('sender', 'like', '%' . $lookup . '%')->where('status',  'unclaimed')->get();}
+        else{
+            $forcancel = peppcodes::whereBetween('tranx_date', [$startDate,$endDateRange
+            ])->where('sender', 'like', '%' . $lookup . '%')->where('status',  'unclaimed')->get();
+        }
 
         return view('peppcodes', ['years' => $years, 'forcancel' => $forcancel]);
     }
 
     public function acic(Request $request)
     {
-
         $acics = acic::all();
         return view('acic', ['acics' => $acics]);
     }
-
 
     public function dashboard(Request $request)
     {
@@ -113,8 +111,8 @@ class ImportController extends Controller
 
         if ($fv == 'roxi') {
             $peppsum = peppcodes::where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
-            ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
+                ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
+                ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
         }
         else{
             $peppsum = peppcodes::where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
@@ -124,15 +122,14 @@ class ImportController extends Controller
 
     public function filter(Request $request)
     {
-        //admin & demo purposes
+        //admin & demo purposes (might delete demo table)
         if (Auth::user()->field_office == 'demo') {
             $lookup = '';
         }
         else {
             $lookup = Auth::user()->field_office;
         }
-
-
+        
         //roxi exclusive
         if (Auth::user()->field_office == 'roxi' || $request->field == 'roxi') {
             $search = peppcodes::query()->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
@@ -141,13 +138,6 @@ class ImportController extends Controller
             $searchf = $search->where('sender', 'like', '%' . $request->program . '%');
             $results = $searchf->where('receiver', 'like', '%' . $request->search . '%')->paginate(15);
         }
-        //admin&demo exclusive - non functional (FINAL TESTING - FOR REMOVAL)
-        /*elseif (Auth::user()->field_office != 'roxi' && $request->field == 'roxi') {
-            $search = peppcodes::query()->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
-            ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->where('status', 'like', '%' . $request->status . '%');
-            $results = $search->where('receiver', 'like', '%' . $request->search . '%')->paginate(15);
-        }*/
         //any other field office
         else
         {$search = peppcodes::query()->where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')
