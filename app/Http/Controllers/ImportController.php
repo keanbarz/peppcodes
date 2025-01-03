@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Exports\ExportCodes;
 use App\Imports\importcodes;
 use App\Imports\importacic;
+use App\Models\signatories;
 use App\Models\peppcodes;
 use App\Models\acic;
 use Carbon\Carbon;
@@ -88,7 +89,8 @@ class ImportController extends Controller
     public function acic(Request $request)
     {
         $acics = acic::all();
-        return view('acic', ['acics' => $acics]);
+        $signatories = signatories::all();
+        return view('acic', compact('acics','signatories'));
     }
 
     public function dashboard(Request $request)
@@ -234,6 +236,8 @@ class ImportController extends Controller
         $ncapad = str_pad(str_replace("-","",$request->input('nca')),10,'0', STR_PAD_LEFT);
         $hash_total = 0;
         $hash = 0;
+        $ccb = $request->input('ccb');
+        $apb = $request->input('apb');
        
         $presum = substr(round(($presum-floor($presum)),2),2);
 
@@ -283,7 +287,9 @@ class ImportController extends Controller
                     'nca'             => $request->input('nca'),
                     'hash_total'      => $hash_total,
                     'sum'             => $sum,
-                    'inwords'        => $inwords,
+                    'inwords'         => $inwords,
+                    'ccb'             => $ccb,
+                    'apb'             => $apb,
                     ];
             if ($acics->isEmpty()) {
                 return response()->json(['error' => 'Controller'], 400);

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>List of  Transactions for the Year </title>
+        <title>ADVICE OF CHECKS ISSUED AND CANCELLED</title>
         <style>/*Tables+Input Box+Button*/
             /* Define styles for the table */
             table {
@@ -187,11 +187,11 @@
                 <div class="box" style="width: 22.80%;display: table-cell;">
                     <p style="font-family: sans-serif; font-size: 10; white-space: nowrap; left: 3;">CERTIFIED CORRECT BY:<br>
                         ___________________<br>
-                        <span style="font-size: 9;">NOVIE JANE B. PANIAGUA</span><br>
+                        <span style="font-size: 9;">{{$ccb}}</span><br>
                         <br>
                         APPROVED BY:<br>
                         ___________________<br>
-                        <span style="font-size:9;">ATTY. JASON P. BALAIS</span>
+                        <span style="font-size:9;">{{$apb}}</span>
                     </p>
                 </div>
                 <div class="box" style="width: 5%;display: table-cell;"></div>                
@@ -274,11 +274,11 @@
                 <div class="box" style="width: 22.80%;display: table-cell;">
                     <p style="font-family: sans-serif; font-size: 10; white-space: nowrap; left: 3;">CERTIFIED CORRECT BY:<br>
                         ___________________<br>
-                        <span style="font-size: 9;">NOVIE JANE B. PANIAGUA</span><br>
+                        <span style="font-size: 9;">{{$ccb}}</span><br>
                         <br>
                         APPROVED BY:<br>
                         ___________________<br>
-                        <span style="font-size:9;">ATTY. JASON P. BALAIS</span>
+                        <span style="font-size:9;">{{$apb}}</span>
                     </p>
                 </div>
                 <div class="box" style="width: 5%;display: table-cell;"></div>                
@@ -434,11 +434,11 @@
                 <div class="box" style="width: 22.80%;display: table-cell;">
                     <p style="font-family: sans-serif; font-size: 10; white-space: nowrap; left: 3;">CERTIFIED CORRECT BY:<br>
                         ___________________<br>
-                        <span style="font-size: 9;">NOVIE JANE B. PANIAGUA</span><br>
+                        <span style="font-size: 9;">{{$ccb}}</span><br>
                         <br>
                         APPROVED BY:<br>
                         ___________________<br>
-                        <span style="font-size:9;">ATTY. JASON P. BALAIS</span>
+                        <span style="font-size:9;">{{$apb}}</span>
                     </p>
                 </div>
                 <div class="box" style="width: 5%;display: table-cell;"></div>                
@@ -520,11 +520,11 @@
                 <div class="box" style="width: 22.80%;display: table-cell;">
                     <p style="font-family: sans-serif; font-size: 10; white-space: nowrap; left: 3;">CERTIFIED CORRECT BY:<br>
                         ___________________<br>
-                        <span style="font-size: 9;">NOVIE JANE B. PANIAGUA</span><br>
+                        <span style="font-size: 9;">{{$ccb}}</span><br>
                         <br>
                         APPROVED BY:<br>
                         ___________________<br>
-                        <span style="font-size:9;">ATTY. JASON P. BALAIS</span>
+                        <span style="font-size:9;">{{$apb}}</span>
                     </p>
                 </div>
                 <div class="box" style="width: 5%;display: table-cell;"></div>                

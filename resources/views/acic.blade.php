@@ -24,13 +24,27 @@
                             maxlength="8" pattern="\d{6}-\d{1}" required>
                             <label for="ncadate">NCA DATE:</label>
                             <input type="text" id="ncadate" name="ncadate" placeholder="mm/dd/yyyy" style="color:black;"
-                            maxlength="10" pattern="\d{2}/\d{2}/\d{4}" required>
+                            maxlength="10" pattern="\d{2}/\d{2}/\d{4}" required><br>
                             <label for="request">Generate</label>
                             <select style="color:black;" name="request" required>
                                 <option value="" disabled selected>Choose</option>
                                 <option value="pdf">PDF</option>
                                 <option value="lbp">LBP Text File</option>
                                 <option value="btr">BTR Text File</option>
+                            </select>
+                            <label for="ccb">Certified Correct By:</label>
+                            <select style="color:black;" name="ccb" required>
+                                <option value="" disabled selected>Choose</option>
+                                @foreach ($signatories as $signatory)
+                                <option value="{{$signatory->name}}">{{$signatory->name}}</option>
+                                @endforeach
+                            </select>
+                            <label for="apb">Approved By:</label>
+                            <select style="color:black;" name="apb" required>
+                                <option value="" disabled selected>Choose</option>
+                                @foreach ($signatories as $signatory)
+                                <option value="{{$signatory->name}}">{{$signatory->name}}</option>
+                                @endforeach
                             </select>
                             <button button type="submit" class="xx">Generate</button>
                             <a href="/importacic/del"><button button type="button" class="xx">Clear Contents</button></a>
