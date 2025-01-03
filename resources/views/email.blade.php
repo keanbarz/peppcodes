@@ -16,7 +16,7 @@
         <p>Good day!</p>
         <p>Kindly see attached file for the List of Unclaimed Palawan Transactions as of {{ date('m/d/Y') }}.<br>
         Please notify the beneficiaries to ensure that the transactions are claimed within the 60 day period from the date of posting (which can be found inside the file).</p>
-        <p>To view the contents of the file, please enter <strong>"{{ $password }}"</strong> (without the quotation marks) as the password inside the excel file.</p>
+        <p>To reveal contents of the file, please enter <strong>"{{ $password }}"</strong> (without the quotation marks) as the password inside the excel file.</p>
         <p>Furthermore, this is to remind you that the <strong>TRANSACTION CODES</strong> are <strong style='color:red'>STRICTLY CONFIDENTIAL</strong> in nature.</p>
         <p>Thank you and God Bless.</p>
         <p>Yours truly,</p>

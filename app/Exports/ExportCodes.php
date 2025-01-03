@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\peppcodes;
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
+use \PhpOffice\PhpSpreadsheet\Style\Protection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -72,15 +73,16 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
             BeforeSheet::class => function (BeforeSheet $event) {
                 // Disable cell editing by protecting the active worksheet
                 $sheet = $event->sheet->getDelegate();
-                $sheet->getProtection()->setSheet(true);
-                $sheet->getProtection()->setPassword('123'); // Set a password to protect cells
             },
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $sheet->insertNewRowBefore(1);
                 $highestRow = $sheet->getHighestRow();
-                $sheet->getStyle('F1')->getProtection()->setLocked(\PhpOffice\PhpSpreadsheet\Style\Protection::PROTECTION_UNPROTECTED);
-                $sheet->getProtection('A1:F' . $highestRow)->setSelectLockedCells(false);  // Prevent selecting locked cells
+                $sheet->getStyle('F1')->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
+                $sheet->getProtection()->setSheet(true);
+                $sheet->getProtection()->setPassword('123'); // Set a password to protect cells
+                $sheet->getProtection()->setSelectLockedCells(true);
+                $sheet->getProtection()->setSelectUnlockedCells(false);
 
 
                 // Adjust column widths to fit content
@@ -94,7 +96,7 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                 $sheet->getStyle('F2:F' . $highestRow)->getNumberFormat()
                 ->setFormatCode('#,##0.00');
                 $sheet->setCellValue('A1', 'PASSWORD:');
-                $sheet->setCellValue('F1', 'replace with password here');
+                $sheet->setCellValue('F1', 'Enter password here');
                 $sheet->mergeCells('A1:E1');
                 $sheet->mergeCells('A' . $highestRow . ':B' . $highestRow);
                 $sheet->mergeCells('D' . $highestRow . ':E' . $highestRow);
@@ -121,6 +123,12 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                     'alignment' => [
                         'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                         'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+
+                $sheet->getStyle('A1')->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
                     ],
                 ]);
 
