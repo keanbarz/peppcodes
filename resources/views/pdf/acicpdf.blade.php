@@ -74,60 +74,32 @@
     <body>
         <!-- LBP P1 Header -->
         <div>
-            <!--div class="container" style="width: 100%; display:table;">
-                <div class="box" style="width: 30%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10;">LAND BANK OF THE PHILIPPINES<br>
+            <div class="container" style="width: 100%; display:table;">
+                <div class="box" style="width: 27%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; white-space: nowrap;">LAND BANK OF THE PHILIPPINES<br>
                     C. M. RECTO<br>
                     C. M. RECTO, DAVAO CITY<br>
                     DATE PREPARED {{ \Carbon\Carbon::now()->format('n/j/Y') }}
                     </p>
                 </div>
-                <div class="box" style="width: 43%;display: table-cell;">
+                <div class="box" style="width: 47%;display: table-cell;">
                     <p style="font-family: sans-serif; font-size: 10; text-align: center;">DEPARTMENT OF LABOR AND EMPLOYMENT
                     QUIMPO BOULEVARD, BRGY. 74-A MATINA
                     CROSSING, DAVAO CITY</p>
                 </div>                
-                <div class="box" style="width: 27%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10;">ACIC NO.: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$acicno}}<br>
-                    ORG CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160010300011<br>
-                    FUNDING SOURCE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;01101101<br>
-                    AREA CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1190<br>
-                    ALLOCATION NO : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$nca}}
+                <div class="box" style="width: 23%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; white-space: nowrap;">ACIC NO.: <br>
+                    ORG CODE:<br>
+                    FUNDING SOURCE:<br>
+                    AREA CODE:<br>
+                    ALLOCATION NO : 
+                    </p>
+                </div><div class="box" style="width: 2%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; text-align:right;">{{$acicno}}<br>
+                    160010300011<br>01101101<br>1190<br>{{$nca}}
                     </p>
                 </div>  
-            </div-->
-            <table style="width: 100%;">
-                <tr>
-                    <td style="width:27%; border:none; white-space: nowrap; ">LANDBANK OF THE PHILIPPINES</td>
-                    <td style="width:47%; border:none; text-align: center; ">DEPARTMENT OF LABOR AND EMPLOYMENT</td>
-                    <td style="width:23%; border:none;"> ACIC NO.:</td>
-                    <td style="width:2%; border:none; text-align: right; ">{{$acicno}}</td>
-                </tr>
-                <tr>
-                    <td style="width:27%; border:none;">C. M. RECTO</td>
-                    <td style="width:47%; border:none; text-align: center;">QUIMPO BOULEVARD, BRGY. 74-A MATINA</td>
-                    <td style="width:23%; border:none;"> ORG CODE:</td>
-                    <td style="width:2%; border:none; text-align: right; ">160010300011</td>
-                </tr>
-                <tr>
-                    <td style="width:27%; border:none;">C. M. RECTO, DAVAO CITY</td>
-                    <td style="width:47%; border:none; text-align: center;">CROSSING, DAVAO CITY</td>
-                    <td style="width:23%; border:none; white-space: nowrap;"> FUNDING SOURCE:</td>
-                    <td style="width:2%; border:none; text-align: right;">01101101</td>
-                </tr>
-                <tr>
-                    <td style="width:27%; border:none;">DATE PREPARED &nbsp;{{ \Carbon\Carbon::now()->format('n/j/Y') }}</td>
-                    <td style="width:47%; border:none; text-align: center;"></td>
-                    <td style="width:23%; border:none; white-space: nowrap;"> AREA CODE:</td>
-                    <td style="width:2%; border:none; text-align: right;">1190</td>
-                </tr>
-                <tr>
-                    <td style="width:27%; border:none;"></td>
-                    <td style="width:47%; border:none; text-align: center;"></td>
-                    <td style="width:23%; border:none; white-space: nowrap;"> ALLOCATION NO :</td>
-                    <td style="width:2%; border:none; text-align: right;">{{$nca}}</td>
-                </tr>
-            </table><br>
+            </div>
             <div style="text-align: center; font-size: 10;">
                 <strong>ADVICE OF CHECKS ISSUED AND CANCELLED</strong>
             </div>
@@ -297,7 +269,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:77%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:77%; padding: 0px;">{{$inwords}}</td>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:2.68%; padding: 0px;"></td>
                     </tr>
                 </table>
@@ -356,24 +328,28 @@
         <!-- BTR P1 Header -->
         <div class="page-break">
             <div class="container" style="width: 100%; display:table;">
-                <div class="box" style="width: 30%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10;">LAND BANK OF THE PHILIPPINES<br>
+                <div class="box" style="width: 27%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; white-space: nowrap;">LAND BANK OF THE PHILIPPINES<br>
                     C. M. RECTO<br>
                     C. M. RECTO, DAVAO CITY<br>
                     DATE PREPARED {{ \Carbon\Carbon::now()->format('n/j/Y') }}
                     </p>
                 </div>
-                <div class="box" style="width: 43%;display: table-cell;">
+                <div class="box" style="width: 47%;display: table-cell;">
                     <p style="font-family: sans-serif; font-size: 10; text-align: center;">DEPARTMENT OF LABOR AND EMPLOYMENT
                     QUIMPO BOULEVARD, BRGY. 74-A MATINA
                     CROSSING, DAVAO CITY</p>
                 </div>                
-                <div class="box" style="width: 27%;display: table-cell;">
-                    <p style="font-family: sans-serif; font-size: 10;">ACIC NO.: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$acicno}}<br>
-                    ORG CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160010300011<br>
-                    FUNDING SOURCE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;01101101<br>
-                    AREA CODE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1190<br>
-                    ALLOCATION NO : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$nca}}
+                <div class="box" style="width: 23%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; white-space: nowrap;">ACIC NO.: <br>
+                    ORG CODE:<br>
+                    FUNDING SOURCE:<br>
+                    AREA CODE:<br>
+                    ALLOCATION NO : 
+                    </p>
+                </div><div class="box" style="width: 2%;display: table-cell;">
+                    <p style="font-family: sans-serif; font-size: 10; text-align:right;">{{$acicno}}<br>
+                    160010300011<br>01101101<br>1190<br>{{$nca}}
                     </p>
                 </div>  
             </div>
@@ -543,7 +519,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none; white-space: nowrap; width:19.35%; padding: 0px;">AMOUNT IN WORDS :<br> <span style="color:white;">placeholder</span></td>
-                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:77%; padding: 0px;">{{$inwords}}<br> <span style="color:white;">placeholder</span></td>
+                        <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:77%; padding: 0px;">{{$inwords}}</td>
                         <td style="text-align:left; border-left: none; border-top: none; border-right: none;  width:2.68%; padding: 0px;"></td>
                     </tr>
                 </table>
