@@ -259,6 +259,7 @@ class ImportController extends Controller
         $num1 = (substr($acct, 6 , 1));
         $num2 = (substr($acicpad, 5 , 1));
         $num3 = (substr($ncapad, 8 , 1));
+        $foot = '0';
 
         foreach($acics as $acic) {
             $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
@@ -278,6 +279,7 @@ class ImportController extends Controller
             if ($num4 == 0){
                 $num4 = 1;
             };
+            $foot += (bcdiv((string)$acic->amount, '100000000', 10));
             $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
             //Reset individual hash
             $hash = 0;}
@@ -317,7 +319,7 @@ class ImportController extends Controller
                 fwrite($file, $line);
             }
 
-            $footer = '999999900000000000000000' . str_pad(str_replace(",","",str_replace(".","",(number_format($hash_total,2)))),19,'0',STR_PAD_LEFT) 
+            $footer = '9999999' . str_pad(str_replace(".","",number_format($foot, 4)),17,'0',STR_PAD_LEFT) . str_pad(str_replace(",","",str_replace(".","",(number_format($hash_total,2)))),19,'0',STR_PAD_LEFT) 
             . str_pad($acics->count(),5,'0',STR_PAD_LEFT) . "0\r\n";
             fwrite($file, $footer);
 
