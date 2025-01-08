@@ -37,7 +37,7 @@
                                     @if (Auth::user()->field_office == "" || Auth::user()->field == "demo")
                                     <label for="field">Field Office:</label>
                                     <select style="color:black;" id="field" name="field">
-                                        <option value="" selected>Field Office</option>
+                                        <option value="" {{ $fv === 'all' ? '' : 'selected' }}>All</option>
                                         <option value="roxi" {{ $fv === 'roxi' ? 'selected' : '' }}>ROXI </option>
                                         <option value="dcfo" {{ $fv === 'dcfo' ? 'selected' : '' }}>DCFO</option>
                                         <option value="dsfo" {{ $fv === 'dsfo' ? 'selected' : '' }}>DSFO</option>
@@ -52,7 +52,7 @@
                                     @endif
                                     <label for="year">Year:</label>
                                     <select style="color:black;" id="year" name="year">
-                                        <option value="" selected>All</option>
+                                        <option value="" {{ $cy == 'all' ? '' : 'selected' }}>All</option>
                                         @foreach ($years as $year)
                                                 <option value="{{$year}}" {{ $cy == $year ? 'selected' : '' }}>{{$year}}</option>
                                         @endforeach

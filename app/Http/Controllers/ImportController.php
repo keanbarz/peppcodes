@@ -231,7 +231,7 @@ class ImportController extends Controller
         $presum = $acics->sum('amount');
         $sum = $presum;
         $inwords = strtoupper($this->spellNumber($presum));
-        $acct = '2016903259'; #str_replace("-", "", $account_number);
+        $acct = '2016903259'; #str_replace("-", "", $check_fund);
         $acicpad = str_pad(str_replace("-","",$request->input('acicno')),10, '0', STR_PAD_LEFT);
         $ncapad = str_pad(str_replace("-","",$request->input('nca')),10,'0', STR_PAD_LEFT);
         $hash_total = 0;
@@ -314,7 +314,7 @@ class ImportController extends Controller
                 $date = explode('/', $row->check_date);
 
                 $line = $acct . str_pad($row->check_number,10,'0', STR_PAD_LEFT) . str_replace("-","",$request->input('acicno')) . str_pad(str_replace("-","",$request->input('nca')),7,'0', STR_PAD_LEFT)
-                 . "****" . $date[2] . str_pad($date[0], 2, '0', STR_PAD_LEFT) . str_pad($date[1], 2, '0', STR_PAD_LEFT) . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
+                 . "****" . $date[2] . $date[0]. $date[1] . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
                  . substr($row->payee,0,40) . str_repeat(" ", 40-(strlen(substr($row->payee,0,40)))). $row->uacs . "  " . "\r\n";
                 fwrite($file, $line);
             }
@@ -348,7 +348,7 @@ class ImportController extends Controller
                 $line = '1190510715160010300011' . str_pad(substr($request->input('nca'),0,6),8,'0', STR_PAD_LEFT) . '0' . substr($request->input('nca'),7,1) 
                 . $request->input('ncadate') . '01101101' . substr($row->uacs,0,8) . '-' . substr($row->uacs,8,2) . '**' . str_pad($row->check_number,10,'0', STR_PAD_LEFT)
                 . '**' . str_pad($row->amount,14,' ', STR_PAD_LEFT) . str_pad(str_replace("-","",$request->input('acicno')),10,'0', STR_PAD_LEFT) 
-                . $row->check_date . '00002016-9032-59' ."\r\n";
+                . $row->check_date . '00002016-9032-59'/* to replace soon */ ."\r\n";
                 fwrite($file, $line);
             }
 
