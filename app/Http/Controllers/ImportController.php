@@ -226,6 +226,7 @@ class ImportController extends Controller
         return redirect()->back();
     }
 
+    //Kini na function, nag if lbp,btr, pdf na ko diri kay ang hash total gamit sa tulo
     public function acicPDF(Request $request)
     {   $acics = acic::all();
         $presum = $acics->sum('amount');
@@ -261,6 +262,7 @@ class ImportController extends Controller
         $num3 = (substr($ncapad, 8 , 1));
         $foot = '0';
 
+        //for hash total
         foreach($acics as $acic) {
             $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
             $num4 = (substr($checkpad, 7 , 1));
@@ -365,6 +367,7 @@ class ImportController extends Controller
 
         }
     }
+    //End of function
 
     public function notify(Request $request)
     {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html> <!--PDF VIEW-->
     <head>
         <title>ADVICE OF CHECKS ISSUED AND CANCELLED</title>
         <style>

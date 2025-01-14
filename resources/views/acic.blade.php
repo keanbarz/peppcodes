@@ -16,6 +16,8 @@
                         @else
                         <form action="/importacic/pdf" method="post" enctype="multipart/form-data" target="_blank">
                         @csrf
+                        <!-- Start, required data: NCA number (callout nalang sa cds), NCA Date (string, manual input), acic number (manual, or fix pina lddap-ada
+                         mag pili lang unsa na check numbers apilon sa acic)-->
                             <label for="acicno">ACIC NO.:</label>
                             <input type="text" id="acicno" name="acicno" style="color:black;" 
                             maxlength="9" pattern="\d{2}-\d{2}-\d{3}" placeholder="##-##-###" required>
@@ -48,6 +50,7 @@
                             </select>
                             <button button type="submit" class="xx">Generate</button>
                             <a href="/importacic/del"><button button type="button" class="xx">Clear Contents</button></a>
+                        <!--End required data-->
                         </form>
                         <script>
                             document.getElementById('acicno').addEventListener('input', function (e) {
