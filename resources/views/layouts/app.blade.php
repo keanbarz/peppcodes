@@ -28,6 +28,7 @@
 
             tr:hover {
                 background-color: yellow;
+                color: red;
                 }
 
             .xx {
