@@ -11,6 +11,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [ImportController::class, 'dashboard'] )->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/text', [ImportController::class, 'sampletext'] )->middleware([CheckFieldOffice::class]);
 
 Route::get('/peppcodes/generate-pdf', [Importcontroller::class, 'generatePDF']);
 Route::post('/importacic/pdf', [Importcontroller::class, 'acicPDF']);

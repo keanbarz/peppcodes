@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -433,6 +434,32 @@ class ImportController extends Controller
         return 'Number out of range';
     }
 
+    public function sampletext()
+    {
+        $phoneNumbers = ['+639304737479', '+639074416182'];
+        $message = 'Test Message';
+        $sender = 'CASHIER - Kenneth';
+
+        foreach ($phoneNumbers as $phoneNumber) {
+            $response = Http::withBasicAuth('sms', 'MJlYbfDk') //i dont mind exposed credentials, needs my phone lol
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                ])
+                ->post(env('SMS_GATE_API_URL'), [
+                    'message' => $message,
+                    'phoneNumbers' => [$phoneNumber], 
+                    'from' => $sender, //To review documentation if custom sender name allowed
+                ]);
+
+            if ($response->successful()) {
+                // Handle successful response
+                echo "Message sent to {$phoneNumber}: " . json_encode($response->json()) . "\n";
+            } else {
+                // Handle error
+                echo "Failed to send message to {$phoneNumber}: " . $response->body() . "\n";
+            }
+        }
+    }
 
 }
 
