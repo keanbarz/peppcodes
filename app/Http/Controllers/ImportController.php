@@ -436,8 +436,10 @@ class ImportController extends Controller
 
     public function sampletext()
     {
-        $phoneNumbers = ['+639304737479', '+639074416182'];
-        $message = 'Test Message';
+        $phoneNumbers = ['+639304737479',];
+        $name = explode(' ', Auth::user()->name);
+        $greetings = "Good day Mr./Ms. " . strtoupper($name[count($name)-1]) . ",\n";
+        $message = "This is to inform you that gwapo ko.";
         $sender = 'CASHIER - Kenneth';
 
         foreach ($phoneNumbers as $phoneNumber) {
@@ -446,7 +448,7 @@ class ImportController extends Controller
                     'Content-Type' => 'application/json',
                 ])
                 ->post(env('SMS_GATE_API_URL'), [
-                    'message' => $message,
+                    'message' => $greetings . $message,
                     'phoneNumbers' => [$phoneNumber], 
                     'from' => $sender, //To review documentation if custom sender name allowed
                 ]);
