@@ -115,10 +115,10 @@ class ImportController extends Controller
         if ($fv == 'roxi') {
             $peppsum = peppcodes::where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
                 ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-                ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
+                ->where('sender', 'not like', '%' . 'dofo' . '%')->where('sender', 'like', '%' . $request->year . '%')->get();
         }
         else{
-            $peppsum = peppcodes::where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
+            $peppsum = peppcodes::where('sender', 'like', '%' . $lookup . '%')->where('sender', 'like', '%' . $request->year . '%')->get();
         }
         return view('dashboard', compact('peppsum','years','fv','cy'));
     }
@@ -438,7 +438,7 @@ class ImportController extends Controller
     {
         $phoneNumbers = ['+639304737479',];
         $name = explode(' ', Auth::user()->name);
-        $greetings = "Good day Mr./Ms. " . strtoupper($name[count($name)-1]) . ",\n";
+        $greetings = "Test Good day Mr./Ms. " . strtoupper($name[count($name)-1]) . ",\n";
         $message = "This is to inform you that gwapo ko.";
         $sender = 'CASHIER - Kenneth';
 
