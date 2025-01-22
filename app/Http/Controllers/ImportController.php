@@ -96,6 +96,7 @@ class ImportController extends Controller
 
     public function dashboard(Request $request)
     {
+        log::info('sworks');
         $currentYear = date('Y');
         $years = range('2023', $currentYear + 1);
         $fv = $request->input('field');
@@ -115,10 +116,10 @@ class ImportController extends Controller
         if ($fv == 'roxi') {
             $peppsum = peppcodes::where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
                 ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-                ->where('sender', 'not like', '%' . 'dofo' . '%')->where('sender', 'like', '%' . $request->year . '%')->get();
+                ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
         }
         else{
-            $peppsum = peppcodes::where('sender', 'like', '%' . $lookup . '%')->where('sender', 'like', '%' . $request->year . '%')->get();
+            $peppsum = peppcodes::where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->get();
         }
         return view('dashboard', compact('peppsum','years','fv','cy'));
     }
@@ -317,7 +318,7 @@ class ImportController extends Controller
                 $date = explode('/', $row->check_date);
 
                 $line = $acct . str_pad($row->check_number,10,'0', STR_PAD_LEFT) . str_replace("-","",$request->input('acicno')) . str_pad(str_replace("-","",$request->input('nca')),7,'0', STR_PAD_LEFT)
-                 . "****" . $date[2] . $date[0]. $date[1] . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
+                 . "****" . $date[2] . str_pad($date[0],2,'0',STR_PAD_LEFT) . str_pad($date[1],2,'0',STR_PAD_LEFT) . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
                  . substr($row->payee,0,40) . str_repeat(" ", 40-(strlen(substr($row->payee,0,40)))). $row->uacs . "  " . "\r\n";
                 fwrite($file, $line);
             }

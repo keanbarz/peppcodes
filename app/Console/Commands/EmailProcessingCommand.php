@@ -93,7 +93,7 @@ class EmailProcessingCommand extends Command
                     {
                         case 'GIP':
                         case 'SPES':
-                            return strtolower($folderName . $subFolderName . 'remittancedole11@gmail.com');
+                            return 'lmpvillarindole11@gmail.com';
                         default:
                             return strtolower($subFolderName . 'remittance' . $folderName . 'dole11@gmail.com');
                     }
@@ -103,6 +103,7 @@ class EmailProcessingCommand extends Command
                 switch ($subFolderName)
                     {
                         case 'GIP':
+                            return 'dole11dcfo21@gmail.com';
                         case 'SPES':
                         case 'TUPAD':
                             return strtolower($subFolderName . 'remit' . $folderName . 'dole11@gmail.com');
