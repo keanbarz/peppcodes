@@ -417,6 +417,41 @@ class ImportController extends Controller
         }
     
         if ($presum < 100) {
+            $tens = (int)($presum / 10) * 10;
+            $remainder = $presum % 10;
+            return $words[$tens] . ($remainder > 0 ? '-' . $this->spellNumber($remainder) : '');
+        }
+    
+        if ($presum < 1000) {
+            $hundreds = (int)($presum / 100);
+            $remainder = $presum % 100;
+            return $words[$hundreds] . ' hundred' . ($remainder > 0 ? ' ' . $this->spellNumber($remainder) : '');
+        }
+    
+        if ($presum < 1000000) {
+            $thousands = (int)($presum / 1000);
+            $remainder = $presum % 1000;
+            return $this->spellNumber($thousands) . ' thousand' . ($remainder > 0 ? ' ' . $this->spellNumber($remainder) : '');
+        }
+    
+        if ($presum < 1000000000) {
+            $millions = (int)($presum / 1000000);
+            $remainder = $presum % 1000000;
+            return $this->spellNumber($millions) . ' million' . ($remainder > 0 ? ' ' . $this->spellNumber($remainder) : '');
+        }
+    
+        return 'Number out of range';
+        /*$words = [
+            0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine',
+            10 => 'ten', 11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen', 16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen',
+            20 => 'twenty', 30 => 'thirty', 40 => 'forty', 50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty', 90 => 'ninety'
+        ];
+    
+        if ($presum < 20) {
+            return $words[$presum];
+        }
+    
+        if ($presum < 100) {
             return $words[(($presum / 10) * 10)-($presum % 10)] . '-' . $this->spellNumber($presum % 10);
         }
     
@@ -432,7 +467,7 @@ class ImportController extends Controller
             return $this->spellNumber($presum / 1000000) . ' million ' . $this->spellNumber($presum % 1000000);
         }    
 
-        return 'Number out of range';
+        return 'Number out of range';*/
     }
 
     public function sampletext()

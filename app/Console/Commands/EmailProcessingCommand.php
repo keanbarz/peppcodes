@@ -90,13 +90,14 @@ class EmailProcessingCommand extends Command
         {
             case 'DORFO':
                 switch ($subFolderName)
-                    {
-                        case 'GIP':
-                        case 'SPES':
-                            return 'lmpvillarindole11@gmail.com';
-                        default:
-                            return strtolower($subFolderName . 'remittance' . $folderName . 'dole11@gmail.com');
-                    }
+                {
+                    case 'GIP':
+                        return strtolower($folderName . $subFolderName . 'remittancedole11@gmail.com');
+                    case 'SPES':
+                        return 'lmpvillarindole11@gmail.com';
+                    default:
+                        return strtolower($subFolderName . 'remittance' . $folderName . 'dole11@gmail.com');
+                }
             case 'DOCFO':
                 return 'remittancedocfodole11@gmail.com';
             case 'DCFO':
