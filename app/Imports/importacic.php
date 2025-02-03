@@ -57,7 +57,7 @@ class importacic implements ToModel  {
         $this->newRecords[] = [
             'check_date'        => $date,
             'check_number'      => $this->check,
-            'payee'             => $row[4],
+            'payee'             => str_replace("Ñ","N", $row[4]),
             'uacs'              => $row[5],
             'amount'            => str_replace(',', '', $row[7]),
         ];
