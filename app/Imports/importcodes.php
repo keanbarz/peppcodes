@@ -44,9 +44,15 @@ class importcodes implements ToModel, WithChunkReading {
                     'tranx_code' => $row[2],
                     'receiver'   => $row[4],
                 ];
-                if (count($this->updateRecords) >= $this->batchSize) {
-                    $this->updateBatch();   
-                }
+            }
+            elseif ($existingRecord['tranx_code'] != $row[2]) {
+                $this->updateRecords[] = [
+                    'id'         => $existingRecord['id'],
+                    'tranx_code' => $row[2],
+                ];
+            }
+            if (count($this->updateRecords) >= $this->batchSize) {
+                $this->updateBatch();   
             }
             else {
                 log::info(sprintf("%02d", $this->count) . '. No changes are being made.');

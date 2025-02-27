@@ -152,6 +152,7 @@ class ImportController extends Controller
         $total = $search->sum('principal');
         /*->orWhere('tranx_code', 'like', '%' . $request->search . '%')
         /*->orWhere('sender', 'like', '%' . $request->search . '%')*/
+        /* ->where('sender', 'like', '%' . $request->field . '%') */
         
 
         return response()->json([
@@ -230,7 +231,7 @@ class ImportController extends Controller
 
     //Kini na function, nag if lbp,btr, pdf na ko diri kay ang hash total gamit sa tulo
     public function acicPDF(Request $request)
-    {   $acics = acic::all();
+    {   $acics = acic::orderby('check_number', 'asc')->get();
         $presum = $acics->sum('amount');
         $sum = $presum;
         $inwords = strtoupper($this->spellNumber($presum));
