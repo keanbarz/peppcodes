@@ -23,33 +23,25 @@ class importacic implements ToModel  {
         return acic::latest('id')->value('check_date');
     }
 
-    public function merge()
-    {
-        if ($this->check == $this->lastcheck()) {
-            $add = acic::where('check_number',$this->check)->first();
-            log::info($add->amount);
-            DB::table('acics')
-                    ->where('check_number', $this->check)
-                    ->update([
-                        'amount'     => $this->amount + $add->amount ,
-                    ]);
-                    return null;
-        }
-        return null;
-    }
-
     public function model(array $row) {
         $date = $row[0] ?? $this->lastdate();
         $this->check = $row[1] ?? $this->lastcheck();
         $this->amount = str_replace(',', '', $row[7]);
+        if (strlen($row[7]) < 4 ){
+            $ref = $row[7] . '.00'; 
+            log::info(strlen($row[7]));
+        }
+        else {
+            $ref = $row[7];
+        }
+
 
         if ($this->check == $this->lastcheck()) {
             $add = acic::where('check_number',$this->check)->first();
-            log::info($add->amount);
             DB::table('acics')
                     ->where('check_number', $this->check)
                     ->update([
-                        'amount'     => $this->amount + $add->amount ,
+                        'amount'     => str_replace(',', '', strval(number_format($this->amount + $add->amount,2))) ,
                     ]);
                     return null;
         }
@@ -59,7 +51,7 @@ class importacic implements ToModel  {
             'check_number'      => $this->check,
             'payee'             => str_replace("Ñ","N", $row[4]),
             'uacs'              => $row[5],
-            'amount'            => str_replace(',', '', $row[7]),
+            'amount'            => str_replace(',', '', $ref),
         ];
         }
         $this->insertBatch();

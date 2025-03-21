@@ -48,21 +48,23 @@ class importcodes implements ToModel, WithChunkReading {
             elseif ($existingRecord['tranx_code'] != $row[2]) {
                 $this->updateRecords[] = [
                     'id'         => $existingRecord['id'],
+                    'status'     => $stat,
                     'tranx_code' => $row[2],
+                    'receiver'   => $row[4],
                 ];
-            }
-            if (count($this->updateRecords) >= $this->batchSize) {
-                $this->updateBatch();   
             }
             else {
                 log::info(sprintf("%02d", $this->count) . '. No changes are being made.');
+            }
+            if (count($this->updateRecords) >= $this->batchSize) {
+                $this->updateBatch();   
             }
         } 
         else {
             // Collect new records for batch insertion
             log::info(sprintf("%02d", $this->count) . '. inserting new enrty into the database.');
             $this->newRecords[] = [
-                'tranx_date' => Carbon::createFromTimestamp((intval($row[0]) - 25569) * 86400)->format('Y-m-d'),
+                'tranx_date' => Carbon::createFromTimestamp((intval($row[0]) - 25569) * 86400)->format('m-d-Y'),
                 'status'     => $stat,
                 'tranx_code' => $row[2],
                 'sender'     => $row[3],
