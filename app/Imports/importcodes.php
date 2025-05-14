@@ -3,90 +3,86 @@
 namespace App\Imports;
 
 use App\Models\peppcodes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class importcodes implements ToModel, WithChunkReading {
+class importcodes implements ToCollection, WithChunkReading
+{
     protected $existingCodes = [];
     protected $newRecords = [];
     protected $updateRecords = [];
     protected $batchSize = 500;
     protected $count = 0;
 
-
-    public function __construct() {
+    public function __construct()
+    {
         // Preload existing transaction codes into a map for fast lookups
         $this->existingCodes = peppcodes::select('id', 'tranx_code', 'status')
             ->get()
             ->keyBy('tranx_code')
             ->toArray();
-
     }
 
-    public function model(array $row) {
-        $this->count++;
-        $stat = $this->determineStatus($row[1]);
-        $tranxCode = substr($row[2], 0, 13);
+    public function collection(Collection $rows)
+    {
+        // Skip the first row and last 2 rows
+        $rows = $rows->slice(1, $rows->count() - 3);
 
-        // Find existing record using preloaded data
-        $existingRecord = $this->findExistingRecord($tranxCode);
-        
-        if ($existingRecord) {
-            // Update if the status has changed
-            if ($existingRecord['status'] != $stat) {
-                log::info(sprintf("%02d", $this->count) . '. Changing status from ' . $existingRecord['status'] . ' to ' . $stat . '.');
-                $this->updateRecords[] = [
-                    'id'         => $existingRecord['id'],
+        foreach ($rows as $row) {
+            $this->count++;
+            $stat = $this->determineStatus($row[1]);
+            $tranxCode = substr($row[2], 0, 13);
+            $existingRecord = $this->findExistingRecord($tranxCode);
+
+            if ($existingRecord) {
+                if ($existingRecord['status'] != $stat || $existingRecord['tranx_code'] != $row[2]) {
+                    Log::info(sprintf("%02d", $this->count) . '. Updating status or code.');
+                    $this->updateRecords[] = [
+                        'id'         => $existingRecord['id'],
+                        'status'     => $stat,
+                        'tranx_code' => $row[2],
+                        'receiver'   => $row[4],
+                    ];
+                } else {
+                    Log::info(sprintf("%02d", $this->count) . '. No changes are being made.');
+                }
+
+                if (count($this->updateRecords) >= $this->batchSize) {
+                    $this->updateBatch();
+                }
+            } else {
+                Log::info(sprintf("%02d", $this->count) . '. Inserting new entry into the database.');
+                $this->newRecords[] = [
+                    'tranx_date' => Carbon::createFromTimestamp((intval($row[0]) - 25569) * 86400)->format('m-d-Y'),
                     'status'     => $stat,
                     'tranx_code' => $row[2],
+                    'sender'     => $row[3],
                     'receiver'   => $row[4],
+                    'principal'  => $row[5],
+                    'fee'        => $row[6],
+                    'total'      => $row[7],
                 ];
-            }
-            elseif ($existingRecord['tranx_code'] != $row[2]) {
-                $this->updateRecords[] = [
-                    'id'         => $existingRecord['id'],
-                    'status'     => $stat,
-                    'tranx_code' => $row[2],
-                    'receiver'   => $row[4],
-                ];
-            }
-            else {
-                log::info(sprintf("%02d", $this->count) . '. No changes are being made.');
-            }
-            if (count($this->updateRecords) >= $this->batchSize) {
-                $this->updateBatch();   
-            }
-        } 
-        else {
-            // Collect new records for batch insertion
-            log::info(sprintf("%02d", $this->count) . '. inserting new enrty into the database.');
-            $this->newRecords[] = [
-                'tranx_date' => Carbon::createFromTimestamp((intval($row[0]) - 25569) * 86400)->format('m-d-Y'),
-                'status'     => $stat,
-                'tranx_code' => $row[2],
-                'sender'     => $row[3],
-                'receiver'   => $row[4],
-                'principal'  => $row[5],
-                'fee'        => $row[6],
-                'total'      => $row[7],
-            ];
 
-            if (count($this->newRecords) >= $this->batchSize) {
-                $this->insertBatch();
+                if (count($this->newRecords) >= $this->batchSize) {
+                    $this->insertBatch();
+                }
             }
         }
+
+        // Final insert/update
         $this->insertBatch();
-        return null;
+        $this->updateBatch();
     }
 
-    protected function findExistingRecord($tranxCode) {
+    protected function findExistingRecord($tranxCode)
+    {
         foreach ($this->existingCodes as $code => $record) {
-            // Check if the preloaded code starts with the given $tranxCode
             if (strpos($code, $tranxCode) === 0) {
-                return $record; // Return the matching record
+                return $record;
             }
         }
         return null;
@@ -103,6 +99,8 @@ class importcodes implements ToModel, WithChunkReading {
 
     protected function insertBatch()
     {
+        if (empty($this->newRecords)) return;
+
         try {
             DB::table('peppcodes')->insert($this->newRecords);
             $this->newRecords = [];
@@ -113,6 +111,8 @@ class importcodes implements ToModel, WithChunkReading {
 
     protected function updateBatch()
     {
+        if (empty($this->updateRecords)) return;
+
         try {
             $updates = collect($this->updateRecords);
             $updates->groupBy('id')->each(function ($group, $id) {
@@ -131,19 +131,8 @@ class importcodes implements ToModel, WithChunkReading {
         }
     }
 
-    public function __destruct()
-    {
-        if (!empty($this->newRecords)) {
-            $this->insertBatch();
-        }
-
-        if (!empty($this->updateRecords)) {
-            $this->updateBatch();
-        }
-    }
-
     public function chunkSize(): int
     {
-        return 1000; // Process 1000 rows at a time
+        return 1000;
     }
 }

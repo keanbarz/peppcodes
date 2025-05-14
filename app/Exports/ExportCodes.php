@@ -4,7 +4,7 @@ namespace App\Exports;
 
 use App\Models\peppcodes;
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
-use \PhpOffice\PhpSpreadsheet\Style\Protection;
+use PhpOffice\PhpSpreadsheet\Style\Protection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -37,7 +37,6 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
             $total = doubleval(peppcodes::where('status', 'unclaimed')->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
             ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
             ->where('sender', 'not like', '%' . 'dofo' . '%')->where('sender', 'like', '%' . $this->program . '%')->sum('principal'));
-            log::info($total);
         } else{
             $total = doubleval(peppcodes::where('status', 'unclaimed')->where('sender', 'like', '%' . $this->field . '%')->where('sender', 'like', '%' . $this->program . '%')->sum('principal'));
         }
@@ -76,14 +75,7 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
             },
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
-                $sheet->insertNewRowBefore(1);
                 $highestRow = $sheet->getHighestRow();
-                $sheet->getStyle('F1')->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
-                $sheet->getProtection()->setSheet(true);
-                $sheet->getProtection()->setPassword('123'); // Set a password to protect cells
-                $sheet->getProtection()->setSelectLockedCells(true);
-                $sheet->getProtection()->setSelectUnlockedCells(false);
-
 
                 // Adjust column widths to fit content
                 $sheet->getColumnDimension('A')->setWidth(13);
@@ -95,9 +87,6 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
 
                 $sheet->getStyle('F2:F' . $highestRow)->getNumberFormat()
                 ->setFormatCode('#,##0.00');
-                $sheet->setCellValue('A1', 'PASSWORD:');
-                $sheet->setCellValue('F1', 'Enter password here');
-                $sheet->mergeCells('A1:E1');
                 $sheet->mergeCells('A' . $highestRow . ':B' . $highestRow);
                 $sheet->mergeCells('D' . $highestRow . ':E' . $highestRow);
                 $sheet->getStyle('A' . $highestRow . ':F' . $highestRow)->applyFromArray([
@@ -110,7 +99,7 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
-                $sheet->getStyle('A1:F2')->applyFromArray([
+                $sheet->getStyle('A1:F1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ],
@@ -139,24 +128,7 @@ class ExportCodes implements FromCollection, WithHeadings, WithEvents
                             'color' => ['argb' => '000000'], // Black borders
                         ],
                     ],
-                    'font' => [
-                        'color' => ['argb' => 'FFFFFFFF'],
-                    ],
                 ]);
-
-                // Create a new conditional formatting rule
-                $conditional = new Conditional();
-                $conditional->setConditionType(Conditional::CONDITION_EXPRESSION);
-                $conditional->setConditions(['$F$1="' . $this->password . '"']); // Value to check
-                $conditional->getStyle()->applyFromArray([
-                    'font' => [
-                        'color' => ['argb' => '000000'],
-                    ],
-                ]);
-
-                // Apply the conditional formatting to the target cell
-                $sheet->getStyle('A2:F' . $highestRow)->setConditionalStyles([$conditional]);
-
             },
 
         ];

@@ -61,7 +61,6 @@ class EmailProcessingCommand extends Command
                     // Send Mail, Skip if Empty
                     if (empty($files)) {
                         $this->info(sprintf("%02d", $count) . '. ' . $folderName . '-' . $subFolderName . ' has no Transactions. Skipping sending email.');
-                        //\Log::info($count);
                     }
                     else {$this->info(sprintf("%02d", $count) . '. Sending Transactions to ' . $folderName . '-' . $subFolderName . '... (' . $destinationEmail . ')');
                        $this->sendEmail($destinationEmail, $files, $subject, $newDateString, $subFolderName, $xnewDateString, $password);
@@ -90,14 +89,14 @@ class EmailProcessingCommand extends Command
         {
             case 'DORFO':
                 switch ($subFolderName)
-                {
-                    case 'GIP':
-                        return strtolower($folderName . $subFolderName . 'remittancedole11@gmail.com');
-                    case 'SPES':
-                        return 'lmpvillarindole11@gmail.com';
-                    default:
-                        return strtolower($subFolderName . 'remittance' . $folderName . 'dole11@gmail.com');
-                }
+                    {
+                        case 'GIP':
+                            return strtolower($folderName . $subFolderName . 'remittancedole11@gmail.com');
+                        case 'SPES':
+                            return 'lmpvillarindole11@gmail.com';
+                        default:
+                            return strtolower($subFolderName . 'remittance' . $folderName . 'dole11@gmail.com');
+                    }
             case 'DOCFO':
                 return 'remittancedocfodole11@gmail.com';
             case 'DCFO':
@@ -124,6 +123,8 @@ class EmailProcessingCommand extends Command
                     {
                         case 'TUPAD':
                             return strtolower($subFolderName . 'remittancedole11' . $folderName . '@gmail.com');
+                        case 'SPES':
+                            return strtolower($subFolderName . 'remittance' . $folderName . 'dole@gmail.com');    
                         default:
                             return strtolower($subFolderName . 'remittance' . $folderName . 'dole11@gmail.com');
                     }

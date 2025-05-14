@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +18,7 @@ use App\Models\signatories;
 use App\Models\peppcodes;
 use App\Models\acic;
 use Carbon\Carbon;
+use ZipArchive;
 
 
 
@@ -303,7 +306,7 @@ class ImportController extends Controller
             }
             else {
             $pdf = PDF::loadView('pdf.acicpdf', $data); 
-            return $pdf->stream('example.pdf');
+            return $pdf->stream( $request->input('acicno') . '.pdf');
             }
         }
         elseif ($request->input('request') == 'lbp')
@@ -342,6 +345,8 @@ class ImportController extends Controller
         }
         elseif ($request->input('request') == 'btr')
         {
+            //$date = explode('/', $row->check_date);
+            
             // Define the file name
             $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . "BTR.txt";
 
@@ -384,22 +389,52 @@ class ImportController extends Controller
         if (Storage::exists($directory)) {
             Storage::deleteDirectory($directory);}
 
+        $sevenZipPath = 'C:\\Program Files\\7-Zip\\7z.exe';
+
         //return Excel::download(new ExportCodes, 'codes.xlsx');
         $fields = ['DCFO', 'ROXI', 'DSFO', 'DOCFO', 'DNFO', 'DIEO', 'DORFO', 'DOFO'];
+        $programs = ['GIP', 'TUPAD', 'SPES'];
 
         foreach ($fields as $field){
-            $programs = ['GIP', 'TUPAD', 'SPES'];
             foreach ($programs as $program) {
                 try {
+                    
                     $password = $program[0] . 'dole11' . strtolower($field) . date('mdy');
-                    Excel::store(new ExportCodes($field,$program,$password), 'palawan/' . $field . '/' . $program . '/' . $field . '_' . $program . '.xlsx','public');
-                } catch (\Exception $e) {}
+                    $relativeTempPath = 'palawan/' . $field . '/' . $program . '/' . $field . '_' . $program . '.xlsx';
+                    $absoluteTempPath = storage_path('app/public/' . $relativeTempPath);
+
+                    Excel::store(new ExportCodes($field,$program,$password), $relativeTempPath,'public');
+
+                    $spreadsheet = IOFactory::load($absoluteTempPath);
+                    $spreadsheet->getSecurity()->setLockWindows(true);
+                    $spreadsheet->getSecurity()->setLockStructure(true);
+                    $spreadsheet->getSecurity()->setLockRevision(true);
+                    $spreadsheet->getSecurity()->setRevisionsPassword($password);
+                    $spreadsheet->getSecurity()->setworkbookPassword($password);
+
+                    $writer = new Xlsx($spreadsheet);
+                    $writer->save($absoluteTempPath);
+
+
+                    $excelFilePath = storage_path('app/public/palawan/' . $field . '/' . $program . '/' . $field . '_' . $program . '.xlsx');
+                    $zipFilePath = storage_path('app/public/palawan/' . $field . '/' . $program . '/' . $field . '_' . $program . '.zip');
+
+                    // Create the zip file with password using 7-Zip
+                    $zipCommand = '"' . $sevenZipPath . '" a -tzip "' . $zipFilePath . '" "' . $excelFilePath . '" -p' . $password;
+                    shell_exec($zipCommand);
+
+                    // Delete the original Excel file after zipping
+                    if (file_exists($excelFilePath)) {
+                        unlink($excelFilePath); // Deletes the file
+                    }           
+
+                } catch (\Exception $e) {
+                    \Log::error("Failed to export $field - $program: " . $e->getMessage());
+                }
             }
         }
         Artisan::call('email:process');
         return redirect()->back()->with('success', 'File imported successfully.');
-        /*Excel::store(new ExportCodes, 'codes.xlsx','public/palawan');
-        return redirect()->back()->with('success', 'File imported successfully.');*/
     }
 
 
@@ -442,52 +477,25 @@ class ImportController extends Controller
         }
     
         return 'Number out of range';
-        /*$words = [
-            0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine',
-            10 => 'ten', 11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen', 16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen',
-            20 => 'twenty', 30 => 'thirty', 40 => 'forty', 50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty', 90 => 'ninety'
-        ];
-    
-        if ($presum < 20) {
-            return $words[$presum];
-        }
-    
-        if ($presum < 100) {
-            return $words[(($presum / 10) * 10)-($presum % 10)] . '-' . $this->spellNumber($presum % 10);
-        }
-    
-        if ($presum < 1000) {
-            return $words[$presum / 100] . ' hundred ' . $this->spellNumber($presum % 100);
-        }
-    
-        if ($presum < 1000000) {
-            return $this->spellNumber($presum / 1000) . ' thousand ' . $this->spellNumber($presum % 1000);
-        }
-
-        if ($presum < 1000000000) {
-            return $this->spellNumber($presum / 1000000) . ' million ' . $this->spellNumber($presum % 1000000);
-        }    
-
-        return 'Number out of range';*/
     }
 
     public function sampletext()
     {
-        $phoneNumbers = ['+639304737479',];
+        $phoneNumbers = ['+639074416182',];
         $name = explode(' ', Auth::user()->name);
-        $greetings = "Test Good day Mr./Ms. " . strtoupper($name[count($name)-1]) . ",\n";
-        $message = "This is to inform you that gwapo ko.";
-        $sender = 'CASHIER - Kenneth';
+        $greetings = "Test Good day Mr./Ms. " /*. strtoupper($name[count($name)-1]) . ",\n"*/;
+        $message = "This is to inform you that.";
+        //$sender = 'CASHIER - Kenneth';
 
         foreach ($phoneNumbers as $phoneNumber) {
-            $response = Http::withBasicAuth('sms', 'MJlYbfDk') //i dont mind exposed credentials, needs my phone lol
+            $response = Http::withBasicAuth('', '') //i dont mind exposed credentials, needs my phone lol
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                 ])
                 ->post(env('SMS_GATE_API_URL'), [
                     'message' => $greetings . $message,
                     'phoneNumbers' => [$phoneNumber], 
-                    'from' => $sender, //To review documentation if custom sender name allowed
+                    /*'from' => $sender,*/ //To review documentation if custom sender name allowed
                 ]);
 
             if ($response->successful()) {
