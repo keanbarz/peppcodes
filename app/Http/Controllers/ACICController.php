@@ -1,0 +1,229 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use App\Imports\importacic;
+use App\Models\signatories;
+use App\Models\acic;
+use ZipArchive;
+
+
+
+class ACICController extends Controller
+{
+    public function importacic(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xls,xlsx,csv'
+        ]);
+
+        try {
+            acic::truncate();
+            Excel::import(new importacic, $request->file('file'));
+            acic::first()->delete();
+            return redirect()->back()->with('success', 'File imported successfully.');}
+        catch (\Exception $e) {
+            Log::error('Error importing file: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error importing the file.');
+        }
+    }
+
+    public function acic(Request $request)
+    {
+        $acics = acic::all();
+        $signatories = signatories::all();
+        return view('acic', compact('acics','signatories'));
+    }
+
+    public function acicdel()
+    {
+        acic::truncate();
+        return redirect()->back();
+    }
+
+    public function acicPDF(Request $request)
+    {   $acics = acic::orderby('check_number', 'asc')->get();
+        $presum = $acics->sum('amount');
+        $sum = $presum;
+        $inwords = strtoupper($this->spellNumber($presum));
+        $acct = '2016903259'; #str_replace("-", "", $check_fund);
+        $acicpad = str_pad(str_replace("-","",$request->input('acicno')),10, '0', STR_PAD_LEFT);
+        $ncapad = str_pad(str_replace("-","",$request->input('nca')),10,'0', STR_PAD_LEFT);
+        $hash_total = 0;
+        $hash = 0;
+        $ccb = $request->input('ccb');
+        $apb = $request->input('apb');
+       
+        $presum = substr(round(($presum-floor($presum)),2),2);
+
+        if (substr($presum,0,1) == 0) {
+            $presum = substr($presum,1);
+        }
+
+        if ($presum == 1) {
+            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
+        }
+        elseif ($presum > 1) {
+            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
+        }
+        else {
+            $inwords .= ' PESOS';
+        }
+
+        $str="1523412453";
+        $num1 = (substr($acct, 6 , 1));
+        $num2 = (substr($acicpad, 5 , 1));
+        $num3 = (substr($ncapad, 8 , 1));
+        $foot = '0';
+
+        //for hash total
+        foreach($acics as $acic) {
+            $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
+            $num4 = (substr($checkpad, 7 , 1));
+            for ($startIndex = 0; $startIndex <= 9; $startIndex++){
+                $hash += (intval(substr($acct, $startIndex, 1)) + intval(substr($acicpad, $startIndex, 1)) + intval(substr($ncapad, $startIndex, 1)) + intval(substr($checkpad, $startIndex, 1))) * intval(substr($str, $startIndex, 1));
+            }
+            if ($num1 == 0){
+                $num1 = 1;
+            };
+            if ($num2 == 0){
+                $num2 = 1;
+            };
+            if ($num3 == 0){
+                $num3 = 1;
+            };
+            if ($num4 == 0){
+                $num4 = 1;
+            };
+            $foot += (bcdiv((string)$acic->amount, '100000000', 10));
+            $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
+            //Reset individual hash
+            $hash = 0;}
+        if ($request->input('request') == 'pdf') {
+            $data = [ 'acics'           => $acics,
+                    'acicno'          => $request->input('acicno'),
+                    'nca'             => $request->input('nca'),
+                    'hash_total'      => $hash_total,
+                    'sum'             => $sum,
+                    'inwords'         => $inwords,
+                    'ccb'             => $ccb,
+                    'apb'             => $apb,
+                    ];
+            if ($acics->isEmpty()) {
+                return response()->json(['error' => 'Controller'], 400);
+            }
+            else {
+            $pdf = PDF::loadView('pdf.acicpdf', $data); 
+            return $pdf->stream( $request->input('acicno') . '.pdf');
+            }
+        }
+        elseif ($request->input('request') == 'lbp')
+        {
+            // Define the file name
+            $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . ".txt";
+
+            // Open the file for writing
+            $file = fopen($fileName, "w");
+
+            // Add data rows
+            foreach ($acics as $row) {
+                $date = explode('/', $row->check_date);
+
+                $line = $acct . str_pad($row->check_number,10,'0', STR_PAD_LEFT) . str_replace("-","",$request->input('acicno')) . str_pad(str_replace("-","",$request->input('nca')),7,'0', STR_PAD_LEFT)
+                 . "****" . $date[2] . str_pad($date[0],2,'0',STR_PAD_LEFT) . str_pad($date[1],2,'0',STR_PAD_LEFT) . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
+                 . substr($row->payee,0,40) . str_repeat(" ", 40-(strlen(substr($row->payee,0,40)))). $row->uacs . "  " . "\r\n";
+                fwrite($file, $line);
+            }
+
+            $footer = '9999999' . str_pad(str_replace(".","",number_format($foot, 4)),17,'0',STR_PAD_LEFT) . str_pad(str_replace(",","",str_replace(".","",(number_format($hash_total,2)))),19,'0',STR_PAD_LEFT) 
+            . str_pad($acics->count(),5,'0',STR_PAD_LEFT) . "0\r\n";
+            fwrite($file, $footer);
+
+            // Close the file
+            fclose($file);
+
+            // Provide file as a download
+            header('Content-Type: text/plain');
+            header('Content-Disposition: attachment; filename="' . $fileName . '"');
+            readfile($fileName);
+
+            //Delete the file from server after download
+            unlink($fileName);
+
+        }
+        elseif ($request->input('request') == 'btr')
+        {
+            //$date = explode('/', $row->check_date); To add to edit data from csv instead of the database
+            
+            $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . "BTR.txt";
+            $file = fopen($fileName, "w");
+
+            // Add data rows
+            foreach ($acics as $row) {
+                $line = '1190510715160010300011' . str_pad(substr($request->input('nca'),0,6),8,'0', STR_PAD_LEFT) . '0' . substr($request->input('nca'),7,1) 
+                . $request->input('ncadate') . '01101101' . substr($row->uacs,0,8) . '-' . substr($row->uacs,8,2) . '**' . str_pad($row->check_number,10,'0', STR_PAD_LEFT)
+                . '**' . str_pad($row->amount,14,' ', STR_PAD_LEFT) . str_pad(str_replace("-","",$request->input('acicno')),10,'0', STR_PAD_LEFT) 
+                . $row->check_date . '00002016-9032-59'/* to replace soon */ ."\r\n";
+                fwrite($file, $line);
+            }
+
+            // Close the file
+            fclose($file);
+
+            // Provide file as a download
+            header('Content-Type: text/plain');
+            header('Content-Disposition: attachment; filename="' . $fileName . '"');
+            readfile($fileName);
+
+            // Optionally delete the file from server after download
+            unlink($fileName);
+        }
+    }
+    //End of function
+
+    #Helper Functions
+    function spellNumber($presum) 
+    {
+        $words = [
+            0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine',
+            10 => 'ten', 11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen', 16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen',
+            20 => 'twenty', 30 => 'thirty', 40 => 'forty', 50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty', 90 => 'ninety'
+        ];
+    
+        if ($presum < 20) {
+            return $words[$presum];
+        }
+    
+        if ($presum < 100) {
+            $tens = (int)($presum / 10) * 10;
+            $remainder = $presum % 10;
+            return $words[$tens] . ($remainder > 0 ? '-' . $this->spellNumber($remainder) : '');
+        }
+    
+        if ($presum < 1000) {
+            $hundreds = (int)($presum / 100);
+            $remainder = $presum % 100;
+            return $words[$hundreds] . ' hundred' . ($remainder > 0 ? ' ' . $this->spellNumber($remainder) : '');
+        }
+    
+        if ($presum < 1000000) {
+            $thousands = (int)($presum / 1000);
+            $remainder = $presum % 1000;
+            return $this->spellNumber($thousands) . ' thousand' . ($remainder > 0 ? ' ' . $this->spellNumber($remainder) : '');
+        }
+    
+        if ($presum < 1000000000) {
+            $millions = (int)($presum / 1000000);
+            $remainder = $presum % 1000000;
+            return $this->spellNumber($millions) . ' million' . ($remainder > 0 ? ' ' . $this->spellNumber($remainder) : '');
+        }
+    
+        return 'Number out of range';
+    }
+}
