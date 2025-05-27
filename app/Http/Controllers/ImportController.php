@@ -13,10 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Exports\ExportCodes;
 use App\Imports\importcodes;
-use App\Imports\importacic;
-use App\Models\signatories;
 use App\Models\peppcodes;
-use App\Models\acic;
 use Carbon\Carbon;
 use ZipArchive;
 
@@ -35,23 +32,6 @@ class ImportController extends Controller
 
         try {
             Excel::import(new importcodes, $request->file('file'));
-            return redirect()->back()->with('success', 'File imported successfully.');}
-        catch (\Exception $e) {
-            Log::error('Error importing file: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'There was an error importing the file.');
-        }
-    }
-
-    public function importacic(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xls,xlsx,csv'
-        ]);
-
-        try {
-            acic::truncate();
-            Excel::import(new importacic, $request->file('file'));
-            acic::first()->delete();
             return redirect()->back()->with('success', 'File imported successfully.');}
         catch (\Exception $e) {
             Log::error('Error importing file: ' . $e->getMessage());
@@ -88,13 +68,6 @@ class ImportController extends Controller
         }
 
         return view('peppcodes', ['years' => $years, 'forcancel' => $forcancel]);
-    }
-
-    public function acic(Request $request)
-    {
-        $acics = acic::all();
-        $signatories = signatories::all();
-        return view('acic', compact('acics','signatories'));
     }
 
     public function dashboard(Request $request)
@@ -225,157 +198,6 @@ class ImportController extends Controller
         return $pdf->stream('example.pdf');
         }
     }
-
-    public function acicdel()
-    {
-        acic::truncate();
-        return redirect()->back();
-    }
-
-    //Kini na function, nag if lbp,btr, pdf na ko diri kay ang hash total gamit sa tulo
-    public function acicPDF(Request $request)
-    {   $acics = acic::orderby('check_number', 'asc')->get();
-        $presum = $acics->sum('amount');
-        $sum = $presum;
-        $inwords = strtoupper($this->spellNumber($presum));
-        $acct = '2016903259'; #str_replace("-", "", $check_fund);
-        $acicpad = str_pad(str_replace("-","",$request->input('acicno')),10, '0', STR_PAD_LEFT);
-        $ncapad = str_pad(str_replace("-","",$request->input('nca')),10,'0', STR_PAD_LEFT);
-        $hash_total = 0;
-        $hash = 0;
-        $ccb = $request->input('ccb');
-        $apb = $request->input('apb');
-       
-        $presum = substr(round(($presum-floor($presum)),2),2);
-
-        if (substr($presum,0,1) == 0) {
-            $presum = substr($presum,1);
-        }
-
-        if ($presum == 1) {
-            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVO';
-        }
-        elseif ($presum > 1) {
-            $inwords .= ' PESOS AND ' . strtoupper($this->spellNumber($presum)) . ' CENTAVOS';
-        }
-        else {
-            $inwords .= ' PESOS';
-        }
-
-        $str="1523412453";
-        $num1 = (substr($acct, 6 , 1));
-        $num2 = (substr($acicpad, 5 , 1));
-        $num3 = (substr($ncapad, 8 , 1));
-        $foot = '0';
-
-        //for hash total
-        foreach($acics as $acic) {
-            $checkpad = str_pad($acic->check_number,10,'0', STR_PAD_LEFT);
-            $num4 = (substr($checkpad, 7 , 1));
-            for ($startIndex = 0; $startIndex <= 9; $startIndex++){
-                $hash += (intval(substr($acct, $startIndex, 1)) + intval(substr($acicpad, $startIndex, 1)) + intval(substr($ncapad, $startIndex, 1)) + intval(substr($checkpad, $startIndex, 1))) * intval(substr($str, $startIndex, 1));
-            }
-            if ($num1 == 0){
-                $num1 = 1;
-            };
-            if ($num2 == 0){
-                $num2 = 1;
-            };
-            if ($num3 == 0){
-                $num3 = 1;
-            };
-            if ($num4 == 0){
-                $num4 = 1;
-            };
-            $foot += (bcdiv((string)$acic->amount, '100000000', 10));
-            $hash_total += ($hash * $num1 * $num2 * $num3 * $num4 * $acic->amount);
-            //Reset individual hash
-            $hash = 0;}
-        if ($request->input('request') == 'pdf') {
-            $data = [ 'acics'           => $acics,
-                    'acicno'          => $request->input('acicno'),
-                    'nca'             => $request->input('nca'),
-                    'hash_total'      => $hash_total,
-                    'sum'             => $sum,
-                    'inwords'         => $inwords,
-                    'ccb'             => $ccb,
-                    'apb'             => $apb,
-                    ];
-            if ($acics->isEmpty()) {
-                return response()->json(['error' => 'Controller'], 400);
-            }
-            else {
-            $pdf = PDF::loadView('pdf.acicpdf', $data); 
-            return $pdf->stream( $request->input('acicno') . '.pdf');
-            }
-        }
-        elseif ($request->input('request') == 'lbp')
-        {
-            // Define the file name
-            $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . ".txt";
-
-            // Open the file for writing
-            $file = fopen($fileName, "w");
-
-            // Add data rows
-            foreach ($acics as $row) {
-                $date = explode('/', $row->check_date);
-
-                $line = $acct . str_pad($row->check_number,10,'0', STR_PAD_LEFT) . str_replace("-","",$request->input('acicno')) . str_pad(str_replace("-","",$request->input('nca')),7,'0', STR_PAD_LEFT)
-                 . "****" . $date[2] . str_pad($date[0],2,'0',STR_PAD_LEFT) . str_pad($date[1],2,'0',STR_PAD_LEFT) . str_pad(str_replace(".","",$row->amount),15,'0', STR_PAD_LEFT) 
-                 . substr($row->payee,0,40) . str_repeat(" ", 40-(strlen(substr($row->payee,0,40)))). $row->uacs . "  " . "\r\n";
-                fwrite($file, $line);
-            }
-
-            $footer = '9999999' . str_pad(str_replace(".","",number_format($foot, 4)),17,'0',STR_PAD_LEFT) . str_pad(str_replace(",","",str_replace(".","",(number_format($hash_total,2)))),19,'0',STR_PAD_LEFT) 
-            . str_pad($acics->count(),5,'0',STR_PAD_LEFT) . "0\r\n";
-            fwrite($file, $footer);
-
-            // Close the file
-            fclose($file);
-
-            // Provide file as a download
-            header('Content-Type: text/plain');
-            header('Content-Disposition: attachment; filename="' . $fileName . '"');
-            readfile($fileName);
-
-            // Optionally delete the file from server after download
-            unlink($fileName);
-
-        }
-        elseif ($request->input('request') == 'btr')
-        {
-            //$date = explode('/', $row->check_date);
-            
-            // Define the file name
-            $fileName = "DOLE". str_replace("-","",$request->input('acicno')) . "BTR.txt";
-
-            // Open the file for writing
-            $file = fopen($fileName, "w");
-
-            // Add data rows
-            foreach ($acics as $row) {
-                $line = '1190510715160010300011' . str_pad(substr($request->input('nca'),0,6),8,'0', STR_PAD_LEFT) . '0' . substr($request->input('nca'),7,1) 
-                . $request->input('ncadate') . '01101101' . substr($row->uacs,0,8) . '-' . substr($row->uacs,8,2) . '**' . str_pad($row->check_number,10,'0', STR_PAD_LEFT)
-                . '**' . str_pad($row->amount,14,' ', STR_PAD_LEFT) . str_pad(str_replace("-","",$request->input('acicno')),10,'0', STR_PAD_LEFT) 
-                . $row->check_date . '00002016-9032-59'/* to replace soon */ ."\r\n";
-                fwrite($file, $line);
-            }
-
-            // Close the file
-            fclose($file);
-
-            // Provide file as a download
-            header('Content-Type: text/plain');
-            header('Content-Disposition: attachment; filename="' . $fileName . '"');
-            readfile($fileName);
-
-            // Optionally delete the file from server after download
-            unlink($fileName);
-
-        }
-    }
-    //End of function
 
     public function notify(Request $request)
     {
