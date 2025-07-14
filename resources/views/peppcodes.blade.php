@@ -22,7 +22,7 @@
                         program: program
                     },
                     success: function (response) {
-                        var productHtml = '';
+                        var queriesHtml = '';
                         response.results.forEach(function (result) {
                             // Create a number formatter instance
                             let formatter = new Intl.NumberFormat(undefined, {
@@ -30,19 +30,17 @@
                                 maximumFractionDigits: 2
                             });
 
-                            productHtml += '<tr>';
-                            productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.tranx_date + '</td>';
-                            productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.status + '</td>';
-                            productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.tranx_code + '</td>';
-                            productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.sender + '</td>';
-                            productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.receiver + '</td>';
-                            productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">' + formatter.format(result.principal) + '</td>';
-                            //productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">' + formatter.format(result.fee) + '</td>';
-                            //productHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">' + formatter.format(result.total) + '</td>';
-                            productHtml += '</tr>';
+                            queriesHtml += '<tr>';
+                            queriesHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.tranx_date + '</td>';
+                            queriesHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.status + '</td>';
+                            queriesHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.tranx_code + '</td>';
+                            queriesHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.sender + '</td>';
+                            queriesHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: left;">' + result.receiver + '</td>';
+                            queriesHtml += '<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">' + formatter.format(result.principal) + '</td>';
+                            queriesHtml += '</tr>';
                         });
 
-                        $('#search-results').html(productHtml);
+                        $('#search-results').html(queriesHtml);
                         $('#pagination-links').html(response.pagination);
 
                         $('#pagination-links a').on('click', function (e) {
@@ -115,6 +113,13 @@
                         @endif
                     @endforeach
                 </select>
+                <label for="program">Program:</label>
+                <select style="color:black;" id="program" name="program">
+                    <option value="" selected>All</option>
+                    <option value="gip" >GIP</option>
+                    <option value="tupad" >TUPAD</option>
+                    <option value="spes" >SPES</option>
+                </select>
                 @if (Auth::user()->field_office == "" || Auth::user()->field_office == "demo")
                 <label for="field">Field Office:</label>
                 <select style="color:black;" id="field" name="field">
@@ -127,13 +132,6 @@
                     <option value="dieo" >DIEO</option>
                     <option value="dorfo" >DORFO</option>
                     <option value="dofo" >DOFO</option>
-                </select>
-                <label for="program">Program:</label>
-                <select style="color:black;" id="program" name="program">
-                    <option value="" selected>All</option>
-                    <option value="gip" >GIP</option>
-                    <option value="tupad" >TUPAD</option>
-                    <option value="spes" >SPES</option>
                 </select>
                 @endif
                 <script>
@@ -181,13 +179,11 @@
                                 </tr>
                                 <tr>
                                     <th class="text-center">TRANX_DATE</th>
-                                    <!--th class="text-center">STATUS</th-->
                                     <th class="text-center">TRANX_CODE</th>
                                     <th class="text-center">SENDER</th>
                                     <th class="text-center">RECEIVER</th>
                                     <th class="text-center">PRINCIPAL</th>
                                     <th class="text-center">DAYS ELAPSED</th>
-                                    <!--th class="text-center">TOTAL</th-->
                                 </tr>
                             </thead>
                             <tbody>
@@ -210,9 +206,6 @@
                     @endif
                     <table>
                         <thead>
-                            <!--tr>
-                                <th colspan="8" class="text-center">PEPP Codes</th>
-                            </tr-->
                             <tr>
                                 <th class="text-center">TRANX_DATE</th>
                                 <th class="text-center">STATUS</th>
@@ -220,8 +213,6 @@
                                 <th class="text-center">SENDER</th>
                                 <th class="text-center">RECEIVER</th>
                                 <th class="text-center">PRINCIPAL</th>
-                                <!--th class="text-center">FEE</th>
-                                <th class="text-center">TOTAL</th-->
                             </tr>
                         </thead>
                         <tbody id="search-results">

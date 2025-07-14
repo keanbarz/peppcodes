@@ -33,7 +33,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th colspan="4" class="text-center">
+                                <th colspan="5" class="text-center">
                                     @if (Auth::user()->field_office == "" || Auth::user()->field == "demo")
                                     <label for="field">Field Office:</label>
                                     <select style="color:black;" id="field" name="field">
@@ -64,6 +64,7 @@
                                 <th class="text-center">CLAIMED</th>
                                 <th class="text-center">UNCLAIMED</th>
                                 <th class="text-center">CANCELLED</th>
+                                <th class="text-center">TOTAL</th>
                             </tr>
                         </thead>
                             <tbody id="search-results">
@@ -92,6 +93,7 @@
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($gpcsum,2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($gpusum,2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($gpcasum,2)}}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format(($gpcsum+$gpusum+$gpcasum),2)}}</td>
                                 </tr>
                                 <tr>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">TUPAD</td>
@@ -118,6 +120,7 @@
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($tpcsum,2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($tpusum,2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($tpcasum,2)}}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format(($tpcsum+$tpusum+$tpcasum),2)}}</td>                                    
                                 </tr>    
                                 <tr>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">SPES</td>
@@ -144,12 +147,14 @@
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($spcsum,2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($spusum,2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format($spcasum,2)}}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format(($spcsum+$spusum+$spcasum),2)}}</td>
                                 </tr>
                                 <tr>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">TOTAL</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format(($gpcsum+$tpcsum+$spcsum),2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format(($gpusum+$tpusum+$spusum),2)}}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format(($gpcasum+$tpcasum+$spcasum),2)}}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{number_format(($peppsum->sum('principal')),2)}}</td>
                                 </tr>            
                             </tbody>
                     </table>

@@ -98,7 +98,6 @@
                     <tr>
                         <th colspan="2" class="text-center">TOTAL PAX: {{$count}}</th>
                         <th colspan="3" class="text-center">TOTAL AMOUNT: {{ number_format($sum,2) }}</th>
-                        <!--th class="text-left">{{ number_format($sum,2) }}</th-->
                     </tr>
                     @endif
                 </tbody>

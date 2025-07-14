@@ -139,6 +139,13 @@ class ImportController extends Controller
 
     public function generatePDF(Request $request)
     {
+        ini_set('max_execution_time', 600); // 5 minutes
+        ini_set('memory_limit', '1024M');
+
+        $field = $request->field ?? '';
+        $program = $request->program ?? '';
+        $status = $request->status ?? '';
+        $year = $request->year ?? '';
 
         if (Auth::user()->field_office == 'demo') {
             $lookup = '';
@@ -151,29 +158,29 @@ class ImportController extends Controller
             $peppcodes = peppcodes::query()->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')
             ->where('sender', 'not like', '%' . 'docfo' . '%')
             ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')
-        ->where('status',  'like', $request->status . '%' )->where('sender', 'like', '%' . $request->field . '%')->where('sender', 'like', '%' . $request->program . '%')->get();
+            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $year . '%')
+        ->where('status',  'like', $status . '%' )->where('sender', 'like', '%' . $field . '%')->where('sender', 'like', '%' . $program . '%')->get();
         }
         else
-        {$peppcodes = peppcodes::query()->where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')
-        ->where('status',  'like', $request->status . '%' )->where('sender', 'like', '%' . $request->field . '%')->where('sender', 'like', '%' . $request->program . '%')->get();}
-        $status = ucwords($request->status);
-        $year = $request->year;
+        {$peppcodes = peppcodes::query()->where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $year . '%')
+        ->where('status',  'like', $status . '%' )->where('sender', 'like', '%' . $field . '%')->where('sender', 'like', '%' . $program . '%')->get();}
+        $status = ucwords($status);
+        $year = $year;
         Log::info($peppcodes);
         $pages = $peppcodes->chunk(10);
         $totalPages = $pages->count();
         $sum = $peppcodes->sum('principal');
         $count = $peppcodes->count();
 
-        if ($request->program != '') {
-            $program = strtoupper($request->program);
+        if ($program != '') {
+            $program = strtoupper($program);
         }
         else {
             $program = '';
         }
        
-        if ($request->field != '') {
-            $field = strtoupper($request->field);
+        if ($field != '') {
+            $field = strtoupper($field);
         }
         else {
             $field = '';
@@ -195,7 +202,7 @@ class ImportController extends Controller
         }
         else {
         $pdf = PDF::loadView('pdf.pdf', $data); 
-        return $pdf->stream('example.pdf');
+        return $pdf->stream('report.pdf');
         }
     }
 
