@@ -36,7 +36,7 @@ class ACICController extends Controller
 
     public function acic(Request $request)
     {
-        $acics = acic::all();
+        $acics = acic::orderby('check_number', 'desc')->get();
         $signatories = signatories::all();
         return view('acic', compact('acics','signatories'));
     }
@@ -48,7 +48,9 @@ class ACICController extends Controller
     }
 
     public function acicPDF(Request $request)
-    {   $acics = acic::orderby('check_number', 'asc')->get();
+    {   
+        $ids = $request->input('data_id');
+        $acics = acic::whereIn('id', $ids)->orderby('check_number', 'asc')->get();
         $presum = $acics->sum('amount');
         $sum = $presum;
         $inwords = strtoupper($this->spellNumber($presum));
