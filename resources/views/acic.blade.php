@@ -10,7 +10,7 @@
                         @if ($acics->count() == 0)
                             <form action="{{ route('importacic') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                                <input type="file" name="file">
+                                <input type="file" name="file" required>
                                 <button type="submit" class="xx">Upload</button>
                             </form>
                         @else
@@ -60,7 +60,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <table>
                         <thead>
-                            <tr>
+                            <tr> 
                                 <th colspan="6" class="text-center">ACIC</th>
                             </tr>
                             <tr>
