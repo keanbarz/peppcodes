@@ -8,7 +8,9 @@
             width: 100%;
             border-collapse: collapse;
             font-family:  Arial, sans-serif;
-            border: 1px solid #ddd; /* Add border to the entire table */
+            border: 1px solid #ddd;
+            table-layout: fixed;
+            word-wrap: break-word;
             }
 
         /* Style table headers */
@@ -68,7 +70,7 @@
             <table>
                 <thead>
                     <tr>
-                        @if ($field != '' || $program != '')
+                        @if ($field != '' && $program != '')
                         <th colspan="5" class="text-center">List of {{$status}} Transactions for the Year {{$year}} - {{$field}} {{$program}}</th>
                         @elseif ($field != '' || $program != '')
                         <th colspan="5" class="text-center">List of {{$status}} Transactions for the Year {{$year}} - {{$field}}{{$program}}</th>
@@ -77,11 +79,11 @@
                         @endif
                     </tr>
                     <tr>
-                        <th class="text-center">TRANSACTION DATE</th>
-                        <th class="text-center">TRANSACTION CODE</th>
-                        <th class="text-center">SENDER</th>
-                        <th class="text-center">RECEIVER</th>
-                        <th class="text-center">PRINCIPAL</th>
+                        <th style="width:20%" class="text-center">TRANSACTION DATE</th>
+                        <th style="width:20%" class="text-center">TRANSACTION CODE</th>
+                        <th style="width:25%" class="text-center">SENDER</th>
+                        <th style="width:20%" class="text-center">RECEIVER</th>
+                        <th style="width:15%" class="text-center">PRINCIPAL</th>
                     </tr>
                 </thead>
                 <tbody>

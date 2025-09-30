@@ -72,7 +72,6 @@ class ImportController extends Controller
 
     public function dashboard(Request $request)
     {
-        log::info('sworks');
         $currentYear = date('Y');
         $years = range('2023', $currentYear + 1);
         $fv = $request->input('field');
@@ -140,7 +139,7 @@ class ImportController extends Controller
     public function generatePDF(Request $request)
     {
         ini_set('max_execution_time', 600); // 5 minutes
-        ini_set('memory_limit', '1024M');
+        ini_set('memory_limit', '2048M');
 
         $field = $request->field ?? '';
         $program = $request->program ?? '';
@@ -166,8 +165,7 @@ class ImportController extends Controller
         ->where('status',  'like', $status . '%' )->where('sender', 'like', '%' . $field . '%')->where('sender', 'like', '%' . $program . '%')->get();}
         $status = ucwords($status);
         $year = $year;
-        Log::info($peppcodes);
-        $pages = $peppcodes->chunk(10);
+        $pages = $peppcodes->chunk(12);
         $totalPages = $pages->count();
         $sum = $peppcodes->sum('principal');
         $count = $peppcodes->count();
