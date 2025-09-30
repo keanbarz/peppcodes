@@ -10,8 +10,19 @@ use Maatwebsite\Excel\Concerns\ToModel;
 class importacic implements ToModel  {
     
     protected $newRecords = [];
+    protected $acicno = [];
     protected $check;
     protected $amount;  
+
+    public function __construct()
+    {
+        // Preload existing transaction codes into a map for fast lookups
+        $this->$check_numbers = acic::select('acicno')
+            ->get()
+            ->keyBy('acicno')
+            ->toArray();
+    }
+
 
     public function lastcheck()
     {
@@ -34,7 +45,7 @@ class importacic implements ToModel  {
         else {
             $ref = $row[7];
         }
-
+        
 
         if ($this->check == $this->lastcheck()) {
             $add = acic::where('check_number',$this->check)->first();

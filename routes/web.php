@@ -26,7 +26,7 @@ Route::get('/peppcodes/update', function () {return view('update');})->middlewar
 Route::post('/import', [ImportController::class, 'import'])->middleware([CheckFieldOffice::class])->name('import');
 
 //Project ACIC (Now moved to a Separate Controller)
-Route::get('/acic', [Aciccontroller::class, 'acic'])->middleware(['auth', 'verified'])->name('acic');
+Route::get('/acic/create', [Aciccontroller::class, 'acic'])->middleware(['auth', 'verified'])->name('acic');
 Route::post('/importacic/pdf', [aciccontroller::class, 'acicPDF']);
 Route::get('/importacic/del', [aciccontroller::class, 'acicdel']);
 Route::get('/importacic/txt', [aciccontroller::class, 'acictxt'])->name('acictxt');
