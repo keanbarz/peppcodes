@@ -50,6 +50,10 @@ class ImportController extends Controller
 
         $currentYear = date('Y');
         $years = range('2023', $currentYear + 1);
+        $months = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $months[$m] = Carbon::create()->month($m)->translatedFormat('F'); 
+            }
 
 
         $endDate = Carbon::now();
@@ -67,7 +71,7 @@ class ImportController extends Controller
             ])->where('sender', 'like', '%' . $lookup . '%')->where('status',  'unclaimed')->get();
         }
 
-        return view('peppcodes', ['years' => $years, 'forcancel' => $forcancel]);
+        return view('peppcodes', ['years' => $years, 'forcancel' => $forcancel, 'months' => $months]);
     }
 
     public function dashboard(Request $request)
@@ -113,13 +117,13 @@ class ImportController extends Controller
         if (Auth::user()->field_office == 'roxi' || $request->field == 'roxi') {
             $search = peppcodes::query()->where('sender', 'not like', '%' . 'dcfo' . '%')->where('sender', 'not like', '%' . 'dsfo' . '%')->where('sender', 'not like', '%' . 'docfo' . '%')
             ->where('sender', 'not like', '%' . 'dnfo' . '%')->where('sender', 'not like', '%' . 'dieo' . '%')->where('sender', 'not like', '%' . 'dorfo' . '%')
-            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', '%' . $request->year . '%')->where('status', 'like', $request->status . '%');
+            ->where('sender', 'not like', '%' . 'dofo' . '%')->where('tranx_date', 'like', $request->month . '%' . $request->year)->where('status', 'like', $request->status . '%');
             $searchf = $search->where('sender', 'like', '%' . $request->program . '%');
             $results = $searchf->where('receiver', 'like', '%' . $request->search . '%')->paginate(15);
         }
         //any other field office
         else
-        {$search = peppcodes::query()->where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', '%' . $request->year . '%')
+        {$search = peppcodes::query()->where('sender', 'like', '%' . $lookup . '%')->where('tranx_date', 'like', $request->month . '%' . $request->year)
             ->where('status', 'like', $request->status . '%');
             $searchf = $search->where('sender', 'like', '%' . $request->program . '%');
         $results = $searchf->where('receiver', 'like', '%' . $request->search . '%')->where('sender', 'like', '%' . $request->field . '%')->paginate(15);}

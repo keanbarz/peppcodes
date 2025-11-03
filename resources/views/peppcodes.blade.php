@@ -6,6 +6,7 @@
             function filterProducts(page = 1) {
                 var search = $('#search').val();
                 var status = $('#status').val();
+                var month = $('#month').val();
                 var year = $('#year').val();
                 var field = $('#field').val();
                 var program = $('#program').val();
@@ -19,7 +20,8 @@
                         status: status,
                         year: year,
                         field: field,
-                        program: program
+                        program: program,
+                        month: month
                     },
                     success: function (response) {
                         var queriesHtml = '';
@@ -71,6 +73,9 @@
             $('#program').on('change', function () {
                 filterProducts(); // Call filter function on any input change
             });
+            $('#month').on('change', function () {
+                filterProducts(); // Call filter function on any input change
+            });
             
             // Initial filtering on page load (optional)
             filterProducts();
@@ -98,6 +103,13 @@
                     <option value="claimed">Claimed</option>
                     <option value="unclaimed" selected>Unclaimed</option>
                     <option value="cancelled">Cancelled</option>
+                </select>
+                <label for="month">Month:</label>
+                <select style="color:black;" id="month" name="month">
+                    <option value="" selected>All</option>
+                    @foreach ($months as $num => $name)
+                        <option value="{{ str_pad($num,2,'0', STR_PAD_LEFT) }}">{{ $name }}</option>
+                    @endforeach
                 </select>
                 <label for="year">Year:</label>
                 <select style="color:black;" id="year" name="year">
